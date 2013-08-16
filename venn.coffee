@@ -2,6 +2,7 @@ class SVG
     # Constructor
     constructor: (elem,@w,@h,@m) ->
         @svg = d3.select(elem).append("svg:svg")
+                .attr("class", "venn-diagram")
                 .attr("width", @w+2*@m)
                 .attr("height", @h+2*@m)
                 .append("g")
@@ -14,15 +15,14 @@ class SVG
             .attr("cy", y)
             .attr("r", r)
 
-    text: (str,x,y, {click, anchor} = {}) ->
+    text: (str,x,y, opts = {}) ->
         s = @svg.append("svg:text")
             .text(str)
             .attr('x', x)
             .attr('y', y)
-        anchor ?= 'middle'
-        s.attr("text-anchor", anchor)
-        click ?= null
-        s.on('click', click) if click?
+        s.attr("text-anchor", opts.anchor ? 'middle')
+        for ev in ['click','mouseover','mouseout','mousemove']
+            s.on(ev, opts[ev]) if opts[ev]?
 
 draw_venn1 = (elem, opts) ->
     w = 300
@@ -33,7 +33,7 @@ draw_venn1 = (elem, opts) ->
        .style("fill", "cyan")
        .style("fill-opacity", ".5")
     svg.text(opts[1]['lbl'], w/2, r/3, {anchor: 'start'})
-    svg.text(opts[1]['str'], w/2, r,   {click: -> opts['click'](1) })
+    svg.text(opts[1]['str'], w/2, r,   opts[1])
 
 draw_venn2 = (elem, opts) ->
     w = 400
@@ -50,9 +50,13 @@ draw_venn2 = (elem, opts) ->
     svg.text(opts[b1]['lbl'], w/2-r/2, r/2, {anchor: 'end'})  # left
     svg.text(opts[b2]['lbl'], w/2+r/2, r/2, {anchor: 'start'})    # right
 
-    svg.text(opts[b1]['str'], r/2, r,   {click: -> opts['click'](b1) })  #left
-    svg.text(opts[b1|b2]['str'], 3*r/2, r, {click: -> opts['click'](b1|b2) })  #middle
-    svg.text(opts[b2]['str'], 5*r/2, r, {click: -> opts['click'](b2) })  #right
+    ss = [{ind: b1, x: r/2, y: r},
+          {ind: b2, x: 5*r/2, y: r},
+          {ind: b1|b2, x: 3*r/2, y: r}]
+
+    for s in ss
+        do (s) ->
+            svg.text(opts[s.ind].str, s.x, s.y, opts[s.ind])
 
 draw_venn3 = (elem, opts) ->
     w = 400
@@ -73,15 +77,18 @@ draw_venn3 = (elem, opts) ->
     svg.text(opts[b2]['lbl'], w/10, r+2*z,     {anchor: 'end'})    # left
     svg.text(opts[b3]['lbl'], w-r/3, r+2*z,    {anchor: 'start'})  # right
 
-    svg.text(opts[b1]['str'], w/2, r/2,         {click: -> opts['click'](b1) })  #top
-    svg.text(opts[b2]['str'], w/2-r, r+z+1.0*z/2.0, {click: -> opts['click'](b2) })  #left
-    svg.text(opts[b3]['str'], w/2+r, r+z+1.0*z/2.0, {click: -> opts['click'](b3) })  #right
+    ss = [{ind: b1,    x: w/2,   y: r/2},
+          {ind: b2,    x: w/2-r, y: r+z+1.0*z/2.0 },
+          {ind: b3,    x: w/2+r, y: r+z+1.0*z/2.0 },
+          {ind: b1|b2, x: r,     y: r+1*z/3 },
+          {ind: b1|b3, x: 2*r,   y: r+1*z/3 },
+          {ind: b2|b3, x: w/2,   y: r+z+1*z/2 },
+          {ind: b1|b2|b3, x: w/2,   y: r+2*z/3 }
+        ]
 
-    svg.text(opts[b1|b2]['str'], r, r+1*z/3,       {click: -> opts['click'](b1|b2) })   #left
-    svg.text(opts[b1|b3]['str'], 2*r, r+1*z/3,     {click: -> opts['click'](b1|b3) })   #right
-    svg.text(opts[b2|b3]['str'], w/2, r+z+1*z/2,   {click: -> opts['click'](b2|b3) })   #bottom
-
-    svg.text(opts[b1|b2|b3]['str'], w/2, r+2*z/3,     {click: -> opts['click'](b1|b2|b3) })  #middle
+    for s in ss
+        do (s) ->
+            svg.text(opts[s.ind].str, s.x, s.y, opts[s.ind])
 
 draw_venn4 = (elem, opts) ->
     rx=187
@@ -114,15 +121,14 @@ draw_venn4 = (elem, opts) ->
        .attr("ry",ry)
        .style("fill", "#1e1e1e")
 
-    text = (str,x,y,{click, anchor} = {}) ->
+    text = (str,x,y, opts = {}) ->
             s = z.append("svg:text")
                  .text(str)
                  .attr('x', x)
                  .attr('y', y)
-            anchor ?= 'middle'
-            s.attr("text-anchor", anchor)
-            click ?= null
-            s.on('click', click) if click?
+            s.attr("text-anchor", opts.anchor ? 'middle')
+            for ev in ['click','mouseover','mouseout','mousemove']
+                s.on(ev, opts[ev]) if opts[ev]?
 
 
     b1=1; b2=2; b3=4; b4=8;
@@ -132,27 +138,31 @@ draw_venn4 = (elem, opts) ->
     text(opts[b3]['lbl'], 550,  810,       {anchor: 'start'})
     text(opts[b4]['lbl'], 630,  900,       {anchor: 'start'})
 
-    text(opts[b1]['str'], 215, 950,    {click: -> opts['click'](b1) })
-    text(opts[b2]['str'], 295, 840,    {click: -> opts['click'](b2) })
-    text(opts[b3]['str'], 505, 840,    {click: -> opts['click'](b3) })
-    text(opts[b4]['str'], 605, 950,    {click: -> opts['click'](b4) })
+    ss= [{ind: b1, x: 215, y: 950},
+         {ind: b2, x: 295, y: 840},
+         {ind: b3, x: 505, y: 840},
+         {ind: b4, x: 605, y: 950},
 
-    text(opts[b2|b3]['str'], 405, 870,     {click: -> opts['click'](b2|b3) })
-    text(opts[b1|b4]['str'], 405, 1130,    {click: -> opts['click'](b1|b4) })
-    text(opts[b1|b2|b3|b4]['str'], 405, 1010,    {click: -> opts['click'](b1|b2|b3|b4) })
+         {ind: b2|b3, x: 405, y: 870},
+         {ind: b1|b4, x: 405, y: 1130},
+         {ind: b1|b2|b3|b4, x: 405, y: 1010},
 
-    text(opts[b1|b2|b3]['str'], 325, 950,     {click: -> opts['click'](b1|b2|b3) })
-    text(opts[b2|b3|b4]['str'], 475, 950,     {click: -> opts['click'](b1|b3|b4) })
+         {ind: b1|b2|b3, x: 325, y: 950},
+         {ind: b2|b3|b4, x: 475, y: 950},
 
-    text(opts[b1|b3]['str'], 285, 1030,     {click: -> opts['click'](b1|b3) })
-    text(opts[b2|b4]['str'], 525, 1030,     {click: -> opts['click'](b2|b4) })
+         {ind: b1|b3, x: 285, y: 1030},
+         {ind: b2|b4, x: 525, y: 1030},
 
-    text(opts[b1|b2]['str'], 270, 900,     {click: -> opts['click'](b1|b2) })
-    text(opts[b3|b4]['str'], 545, 900,     {click: -> opts['click'](b3|b4) })
+         {ind: b1|b2, x: 270, y: 900},
+         {ind: b3|b4, x: 545, y: 900},
 
-    text(opts[b1|b3|b4]['str'], 345, 1070,     {click: -> opts['click'](b1|b3|b4) })
-    text(opts[b1|b2|b4]['str'], 465, 1070,     {click: -> opts['click'](b1|b2|b4) })
+         {ind: b1|b3|b4, x: 345, y: 1070},
+         {ind: b1|b2|b4, x: 465, y: 1070},
+        ]
 
+    for s in ss
+        do (s) ->
+            text(opts[s.ind].str, s.x, s.y, opts[s.ind])
 
 
 
@@ -165,6 +175,27 @@ window.draw_venn = (n, elem, opts) ->
 
 $(document).ready () ->
     draw_venn(1, '#venn1', {1: {lbl: 'Label', str: 'String'} })
-    draw_venn(2, '#venn2', ({lbl: "Label #{n}", str: "Str #{n}"} for n in [0..3]))
-    draw_venn(3, '#venn3', ({lbl: "Label #{n}", str: "Str #{n}"} for n in [0..7]))
-    draw_venn(4, '#venn4', ({lbl: "Label #{n}", str: "#{n}"} for n in [0..15]))
+    draw_venn(2, '#venn2', for n in [0..3]
+                               do (n) ->
+                                   lbl: "Label #{n}"
+                                   str: "Str #{n}"
+                                   click: () -> console.log("click="+n)
+                                   mouseover: () -> console.log("mouseover="+n)
+                                   mouseout: () -> console.log("mouseout="+n)
+            )
+    draw_venn(3, '#venn3', for n in [0..7]
+                               do (n) ->
+                                   lbl: "Label #{n}"
+                                   str: "Str #{n}"
+                                   click: () -> console.log("click="+n)
+                                   mouseover: () -> console.log("mouseover="+n)
+                                   mouseout: () -> console.log("mouseout="+n)
+            )
+    draw_venn(4, '#venn4', for n in [0..15]
+                               do (n) ->
+                                   lbl: "Label #{n}"
+                                   str: "#{n}"
+                                   click: () -> console.log("click="+n)
+                                   mouseover: () -> console.log("mouseover="+n)
+                                   mouseout: () -> console.log("mouseout="+n)
+            )

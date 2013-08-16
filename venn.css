@@ -1,14 +1,20 @@
 
-ellipse {
+.venn-diagram ellipse {
     fill-opacity: 0.2;
     stroke: black;
     stroke-width: 2.4;
 }
 
-circle {
+.venn-diagram circle {
     fill-opacity: 0.2;
     stroke: black;
     stroke-width: 2.4;
 }
-
+.venn-diagram text {
+    //fill: #0088cc;
+}
+.venn-diagram text:hover {
+    text-decoration: underline;
+    //fill: #005580;
+}
 
