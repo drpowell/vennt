@@ -1,20 +1,7 @@
 
-fdr_cutoff = 0.01
+g_fdr_cutoff = 0.01
 
 get_pos_neg = (v) -> if (v >= 0) then "pos" else "neg"
-
-update_rows_significance = () ->
-    return if $($('#demo table th')[pValCol]).html() != 'adj.P.Val'
-    $('#demo table tr').each(set_significance)
-
-set_significance = (i, tr) ->
-  pval = Number($($('td',tr)[pValCol]).text())
-  if (pval < fdr_cutoff)
-    $(tr).addClass('sig')
-    $(tr).removeClass('nosig')
-  else
-    $(tr).removeClass('sig')
-    $(tr).addClass('nosig')
 
 get_selected = ->
   sels = $('.selected')
@@ -161,26 +148,6 @@ secondary_table = (forRows, k, set) ->
            )
 
 
-g_fdr_field = "input.fdr-fld"
-
-$(g_fdr_field).keyup(() ->
-  v = Number($(this).val())
-  if (isNaN(v) || v<0 || v>1)
-      $(this).addClass('error')
-  else
-      $(this).removeClass('error')
-      set_fdr_cutoff(v)
-)
-
-g_slider = null
-
-set_fdr_cutoff = (v) ->
-  fdr_cutoff = v
-  g_slider.set_slider(v)
-  set_all_counts()
-  update_selected()
-  update_rows_significance()
-
 span = (clazz) -> "<span class='selectable #{clazz}'></span>"
 
 key_column = 'key'
@@ -210,7 +177,7 @@ class Data
     num_fdr: (key) ->
         num = 0; up=0; down=0
         for id,d of @data
-            if d[key][fdrCol]<fdr_cutoff
+            if d[key][fdrCol]<g_fdr_cutoff
                 num+=1
                 if (d[key][logFCcol]>0)
                     up++
@@ -274,7 +241,7 @@ class GeneTable
     _meta_formatter: (item, ret) ->
         ret ?= {}
         ret.cssClasses ?= ''
-        ret.cssClasses += if item[fdrCol] <= fdr_cutoff then 'sig' else 'nosig'
+        ret.cssClasses += if item[fdrCol] <= g_fdr_cutoff then 'sig' else 'nosig'
         ret
 
     _fc_div: (n) ->
@@ -315,6 +282,9 @@ class GeneTable
         btm = d3.min [view.bottom, @dataView.getLength()]
         $(@opts.elem_info).html("Showing #{view.top}..#{btm} of #{@dataView.getLength()}")
 
+    refresh: () ->
+        @grid.invalidate()
+
     set_data: (data) ->
         @dataView.beginUpdate()
         @grid.setColumns([])
@@ -347,6 +317,7 @@ class SelectorTable
 
     set_all_counts: () ->
         $('li',elem).each((i,e) => @set_counts(e))
+        @gene_table.refresh()
 
     set_counts: (li) ->
         name = $(li).attr('class')
@@ -354,8 +325,6 @@ class SelectorTable
         $(".total",li).text(nums['num'])
         $(".up",li).html(nums['up']+"&uarr;")
         $(".down",li).html(nums['down']+"&darr;")
-
-        # "("+(nums['num']*fdr_cutoff).toFixed(1)+")")
 
     _sel_span: (item) ->
         if $(item).hasClass('selected')
@@ -367,18 +336,42 @@ class SelectorTable
         false
 
 
+class DGEVenn
+    constructor: () ->
+        setup_tabs()
+        $("input.fdr-fld").value = g_fdr_cutoff
 
-init = () ->
-    setup_tabs()
-    $("input.fdr-fld").value = fdr_cutoff
+        d3.csv("data.csv", (rows) => @_data_ready(rows))
 
-    g_slider = new Slider( "#fdrSlider", g_fdr_field, set_fdr_cutoff)
-    g_slider.set_slider(fdr_cutoff)
-
-    d3.csv("data.csv", (rows) ->
+    _data_ready: (rows) ->
         data = new Data(rows)
-        sel = new SelectorTable(data)
-        sel.selected(data.keys[0])
-    )
+        @selector = new SelectorTable(data)
+        @selector.selected(data.keys[0])
 
-$(document).ready(() -> init())
+        @_setup_fdr_slider()
+
+    _setup_fdr_slider: () ->
+        fdr_field = "input.fdr-fld"
+
+        @slider = new Slider( "#fdrSlider", fdr_field, (v) => @set_fdr_cutoff(v))
+        @slider.set_slider(g_fdr_cutoff)
+
+        $(fdr_field).keyup((ev) =>
+            el = ev.target
+            v = Number($(el).val())
+            if (isNaN(v) || v<0 || v>1)
+                $(el).addClass('error')
+            else
+                $(el).removeClass('error')
+            @set_fdr_cutoff(v)
+        )
+
+    set_fdr_cutoff: (v) ->
+        g_fdr_cutoff = v
+        @slider.set_slider(v)
+        @selector.set_all_counts()
+
+        #update_selected()
+        #update_rows_significance()
+
+$(document).ready(() -> new DGEVenn())
