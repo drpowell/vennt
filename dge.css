@@ -1,7 +1,16 @@
 
-#demo .pos { background-color: #dfd }
-#demo .neg { background-color: #fdd }
-#demo .nosig { opacity: 0.4; }
+.pos { background-color: #dfd }
+.neg { background-color: #fdd }
+.nosig { opacity: 0.4; }
+
+#gene-table { height: 300px; }
+#gene-table-info { font-size: 9pt; }
+.slick-row { font-size: 9pt; }
+.slick-row:hover {
+  font-weight: bold;
+  color: #069;
+}
+.slick-header-column { height: auto !important; }
 
 .file { width: 200px; display: inline-block; }
 

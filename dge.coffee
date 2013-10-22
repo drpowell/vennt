@@ -1,65 +1,7 @@
 
 fdr_cutoff = 0.01
-logFCcol=2
-pValCol=3
-fdrCol = 6
 
-cmp = (x,y) -> if x<y
-                   return 1
-               else if x>y
-                   return -1
-               else
-                   return 0
-
-by_float = (a,b) ->
-    x = parseFloat( a )
-    y = parseFloat( b )
-    cmp(x,y)
-
-by_float_abs = (a,b) ->
-    x = Math.abs(parseFloat( a ))
-    y = Math.abs(parseFloat( b ))
-    cmp(x,y)
-
-jQuery.fn.dataTableExt.oSort['by-float-desc'] = by_float
-jQuery.fn.dataTableExt.oSort['by-float-asc'] = (a,b) -> by_float(b,a)
-jQuery.fn.dataTableExt.oSort['by-float-abs-desc'] = by_float_abs
-jQuery.fn.dataTableExt.oSort['by-float-abs-asc'] = (a,b) -> by_float_abs(b,a)
-
-hide_columns = (dat) ->
-    for col in dat["aoColumns"]
-        title = col["sTitle"]
-        if ($.inArray(title, ['Feature','product','logFC','adj.P.Val'])>=0)
-            col["bVisible"] = true
-        else
-            col["bVisible"] = false
-        if ($.inArray(title, ['adj.P.Val'])>=0)
-            col["sType"] = "by-float"
-        if ($.inArray(title, ['logFC'])>=0)
-            col["sType"] = "by-float-abs"
-    dat
-
-mkTable = (pre, data, sort, rowCallback) ->
-    $('#demo').html( pre + '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>' )
-    settings =
-        sScrollY: "200px",
-        bPaginate: false,
-        bScrollCollapse: true,
-        aaSorting: sort,
-        fnRowCallback: rowCallback
-
-    $('#example').dataTable( $.extend(data, settings) )
-
-window.showTable = (name) ->
-    mkTable('<h3>'+name+'</h3>',
-            hide_columns(globalData['data'][name]),
-            [[fdrCol, "asc"]],
-            (row, dat) ->
-                 $(row).removeClass('odd even')
-                 set_pos_neg(dat[2], row))
-    update_rows_significance()
-
-set_pos_neg = (v, elem) -> $(elem).addClass(if (v >= 0) then "pos" else "neg")
+get_pos_neg = (v) -> if (v >= 0) then "pos" else "neg"
 
 update_rows_significance = () ->
     return if $($('#demo table th')[pValCol]).html() != 'adj.P.Val'
@@ -73,29 +15,6 @@ set_significance = (i, tr) ->
   else
     $(tr).removeClass('sig')
     $(tr).addClass('nosig')
-
-num_fdr = (rows) ->
-  num = 0; up=0; down=0
-  for row in rows
-      if row[fdrCol]<fdr_cutoff
-          num+=1
-          if (row[logFCcol]>0)
-              up++
-          else
-              down++
-  {'num': num, 'up': up, 'down': down}
-
-set_counts = (li) ->
-  name = $(li).attr('class')
-  nums=num_fdr(globalData['data'][name]["aaData"])
-  $(".total",li).text(nums['num'])
-  $(".up",li).html(nums['up']+"&uarr;")
-  $(".down",li).html(nums['down']+"&darr;")
-
-  # "("+(nums['num']*fdr_cutoff).toFixed(1)+")")
-
-set_all_counts = ->
-  $('#files li').each((i,elem) -> set_counts(elem))
 
 get_selected = ->
   sels = $('.selected')
@@ -180,11 +99,13 @@ update_selected = ->
       $('#file_set li[data-target=venn]').removeClass('disabled')
       n = set.length
       venn = {}
+      # All numbers in the venn
       for i in [1 .. Math.pow(2,set.length)-1]
           do (i) ->
               str = reverseStr(toBinary(n,i))
               venn[i] = {str: counts[str] || 0}
               venn[i]['click'] = () -> secondary_table(forRows, str, set)
+      # Add the outer labels
       for s,i in set
           do (s,i) ->
               venn[1<<i]['lbl']   = s['typ'] + s['name']
@@ -239,56 +160,225 @@ secondary_table = (forRows, k, set) ->
                                  $(td).addClass(if (k[i-2] == '1') then 'sig' else 'nosig')
            )
 
-$(document).ready(() ->
-  fdr_field = "input.fdr-fld"
 
-  $(fdr_field).keyup(() ->
-    v = Number($(this).val())
-    if (isNaN(v) || v<0 || v>1)
-        $(this).addClass('error')
-    else
-        $(this).removeClass('error')
-        set_fdr_cutoff(v)
-  )
+g_fdr_field = "input.fdr-fld"
 
-  set_fdr_cutoff = (v) ->
-    fdr_cutoff = v
-    slider.set_slider(v)
-    set_all_counts()
-    update_selected()
-    update_rows_significance()
-
-  sel_span = (item) ->
-      if $(item).hasClass('selected')
-        $(item).removeClass('selected')
-      else
-        $(item).siblings('span').removeClass('selected')
-        $(item).addClass('selected')
-      update_selected()
-      false
-
-  span = (clazz) -> "<span class='selectable #{clazz}'></span>"
-
-  slider = new Slider( "#fdrSlider", fdr_field, set_fdr_cutoff)
-
-
-  init = () ->
-      setup_tabs()
-      $("input.fdr-fld").value = fdr_cutoff
-      slider.set_slider(fdr_cutoff)
-
-      $.each(globalData['order'], (i, name) ->
-        $("#files").append(
-          "<li class='#{name}'>"+
-          "<a class='file' href='#' onClick='showTable(\"#{name}\")'>#{name}</a>"+
-          span("total")+span("up")+span("down") +
-           "")
-      )
-      $('.selectable').click( -> sel_span($(this)) )
-      set_all_counts()
-      update_selected()
-
-      showTable(globalData['order'][0])
-
-  init()
+$(g_fdr_field).keyup(() ->
+  v = Number($(this).val())
+  if (isNaN(v) || v<0 || v>1)
+      $(this).addClass('error')
+  else
+      $(this).removeClass('error')
+      set_fdr_cutoff(v)
 )
+
+g_slider = null
+
+set_fdr_cutoff = (v) ->
+  fdr_cutoff = v
+  g_slider.set_slider(v)
+  set_all_counts()
+  update_selected()
+  update_rows_significance()
+
+span = (clazz) -> "<span class='selectable #{clazz}'></span>"
+
+key_column = 'key'
+id_column = 'Feature'
+fdrCol = 'adj.P.Val'
+logFCcol = 'logFC'
+
+class Data
+    constructor: (rows) ->
+        @data = {}
+        for r in rows
+            d = (@data[r[id_column]] ?= {})
+            r.id ?= r[id_column]   # Needed by slickgrid (better be unique!)
+
+            # Make number columns actual numbers
+            for num_col in [fdrCol, logFCcol]
+                r[num_col]=+r[num_col] if r[num_col]
+
+            d[r[key_column]] = r
+
+        @ids = d3.keys(@data)
+        @keys = d3.keys(@data[@ids[0]])
+
+    get_data_for: (key) ->
+        @ids.map((id) => @data[id][key])
+
+    num_fdr: (key) ->
+        num = 0; up=0; down=0
+        for id,d of @data
+            if d[key][fdrCol]<fdr_cutoff
+                num+=1
+                if (d[key][logFCcol]>0)
+                    up++
+                else
+                    down++
+        {'num': num, 'up': up, 'down': down}
+
+class GeneTable
+    constructor: (@opts) ->
+        grid_options =
+            enableCellNavigation: true
+            enableColumnReorder: false
+            multiColumnSort: false
+            forceFitColumns: true
+        @dataView = new Slick.Data.DataView()
+        @grid = new Slick.Grid(@opts.elem, @dataView, [], grid_options)
+
+        @dataView.onRowCountChanged.subscribe( (e, args) =>
+            @grid.updateRowCount()
+            @grid.render()
+            @_update_info()
+        )
+
+        @dataView.onRowsChanged.subscribe( (e, args) =>
+            @grid.invalidateRows(args.rows)
+            @grid.render()
+        )
+
+        @grid.onSort.subscribe( (e,args) => @_sorter(args) )
+        @grid.onViewportChanged.subscribe( (e,args) => @_update_info() )
+
+        # Set up event callbacks
+        if @opts.mouseover
+            @grid.onMouseEnter.subscribe( (e,args) =>
+                i = @grid.getCellFromEvent(e).row
+                d = @dataView.getItem(i)
+                @opts.mouseover(d)
+            )
+        if @opts.mouseout
+            @grid.onMouseLeave.subscribe( (e,args) =>
+                @opts.mouseout()
+            )
+        if @opts.dblclick
+            @grid.onDblClick.subscribe( (e,args) =>
+                @opts.dblclick(@grid.getDataItem(args.row))
+            )
+
+        @_setup_metadata_formatter((ret) => @_meta_formatter(ret))
+
+    _setup_metadata_formatter: (formatter) ->
+        row_metadata = (old_metadata_provider) ->
+            (row) ->
+                item = this.getItem(row)
+                ret = old_metadata_provider(row)
+
+                formatter(item, ret)
+
+        @dataView.getItemMetadata = row_metadata(@dataView.getItemMetadata)
+
+
+    _meta_formatter: (item, ret) ->
+        ret ?= {}
+        ret.cssClasses ?= ''
+        ret.cssClasses += if item[fdrCol] <= fdr_cutoff then 'sig' else 'nosig'
+        ret
+
+    _fc_div: (n) ->
+        "<div class='#{get_pos_neg(n)}'>#{n.toFixed(2)}</div>"
+
+    _columns: () ->
+        [id_column, logFCcol, fdrCol].map((col) =>
+            id: col
+            name: col
+            field: col
+            sortable: true
+            formatter: (i,c,val,m,row) =>
+                if col in [logFCcol]
+                    @_fc_div(val)
+                else if col in [fdrCol]
+                    if val<0.01 then val.toExponential(2) else val.toFixed(2)
+                else
+                    val
+        )
+
+    _sorter: (args) ->
+        comparer = (x,y) -> (if x == y then 0 else (if x > y then 1 else -1))
+        col = args.sortCol.id
+        @dataView.sort((r1,r2) ->
+            r = 0
+            x=r1[col]; y=r2[col]
+            if col in [logFCcol]
+                r = comparer(Math.abs(x), Math.abs(y))
+            else if col in [fdrCol]
+                r = comparer(x, y)
+            else
+                r = comparer(x,y)
+            r * (if args.sortAsc then 1 else -1)
+        )
+
+    _update_info: () ->
+        view = @grid.getViewport()
+        btm = d3.min [view.bottom, @dataView.getLength()]
+        $(@opts.elem_info).html("Showing #{view.top}..#{btm} of #{@dataView.getLength()}")
+
+    set_data: (data) ->
+        @dataView.beginUpdate()
+        @grid.setColumns([])
+        @dataView.setItems(data)
+        @dataView.reSort()
+        @dataView.endUpdate()
+        @grid.setColumns(@_columns())
+
+        #set_pos_neg(dat[2], row))
+        #update_rows_significance()
+
+class SelectorTable
+    elem = "#files"
+    constructor: (@data) ->
+        @gene_table = new GeneTable({elem:'#gene-table', elem_info: '#gene-table-info'})
+        for name in data.keys
+            do (name) =>
+                li = $("<li class='#{name}'><a class='file' href='#'>#{name}</a>"+
+                       span("total")+span("up")+span("down"))
+                $('a',li).click(() => @selected(name))
+                $(elem).append(li)
+        $('.selectable').click((el) => @_sel_span(el.target))
+        @set_all_counts()
+        #update_selected()
+
+    selected: (name) ->
+        rows = @data.get_data_for(name)
+        @gene_table.set_data(rows)
+        $('#gene-list-name').text("for '#{name}'")
+
+    set_all_counts: () ->
+        $('li',elem).each((i,e) => @set_counts(e))
+
+    set_counts: (li) ->
+        name = $(li).attr('class')
+        nums = @data.num_fdr(name)
+        $(".total",li).text(nums['num'])
+        $(".up",li).html(nums['up']+"&uarr;")
+        $(".down",li).html(nums['down']+"&darr;")
+
+        # "("+(nums['num']*fdr_cutoff).toFixed(1)+")")
+
+    _sel_span: (item) ->
+        if $(item).hasClass('selected')
+            $(item).removeClass('selected')
+        else
+            $(item).siblings('span').removeClass('selected')
+            $(item).addClass('selected')
+        update_selected()
+        false
+
+
+
+init = () ->
+    setup_tabs()
+    $("input.fdr-fld").value = fdr_cutoff
+
+    g_slider = new Slider( "#fdrSlider", g_fdr_field, set_fdr_cutoff)
+    g_slider.set_slider(fdr_cutoff)
+
+    d3.csv("data.csv", (rows) ->
+        data = new Data(rows)
+        sel = new SelectorTable(data)
+        sel.selected(data.keys[0])
+    )
+
+$(document).ready(() -> init())

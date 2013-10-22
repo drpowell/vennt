@@ -5,21 +5,23 @@
 
     <!-- Boostrap CSS -->
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
+    <!-- SlickGrid CSS -->
+    <link rel="stylesheet" href="lib/slick.grid.css" type="text/css"/>
 
     <!-- jQuery -->
     <script type="text/javascript" charset="utf8" src="lib/jquery-1.8.2.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css" />
 
-    <!-- DataTables -->
-    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+    <!-- SlickGrid -->
+    <script type="text/javascript" src="lib/jquery.event.drag-2.2.js"></script>
+    <script type="text/javascript" src="lib/slick.core.js"></script>
+    <script type="text/javascript" src="lib/slick.grid.js"></script>
+    <script type="text/javascript" src="lib/slick.dataview.js"></script>
 
+    <!-- D3 -->
     <script src="lib/d3.v2.js"></script>
 
-    <script src="data.json" type="text/javascript"></script>
     <script src="slider.js" type="text/javascript"></script>
     <script src="venn.js" type="text/javascript"></script>
     <script src="dge.js" type="text/javascript"></script>
@@ -43,16 +45,14 @@
             <li data-target='table'><a href="#">Table</a></li>
             <li data-target='venn'><a href="#">Venn</a></li>
           </ul>
-          <div id=table class='tab-content'>
-            <table class='table'></table>
-          </div>
-          <div id=venn class='tab-content'>
-          </div>
+          <div id='grid' class='tab-content'></div>
+          <div id=venn class='tab-content'></div>
         </div>
       </div>
 
-      <h2>Genes</h2>
-      <div id='demo'>demo</div>
+      <h2>Gene List <span id='gene-list-name'></span></h2>
+      <div id='gene-table-info'></div>
+      <div id='gene-table'></div>
     </div>
 
 </body>
