@@ -169,21 +169,26 @@ update_selected = ->
     $('#file_set table').append(tr)
 
     # Ridiculous hack so 'k' is not used in callback.  Necessary because of daft js scoping
-    closure = (this_k) -> $('#file_set table tr a:last').click(() -> secondary_table(forRows, this_k, set))
-    closure(k)
+    do (k) ->
+        $('#file_set table tr a:last').click(() -> secondary_table(forRows, k, set))
 
   $('#file_set li[data-target=venn]').addClass('disabled')
 
+  # Draw venn diagram
   $('#file_set svg').remove()
   if set.length<=4
       $('#file_set li[data-target=venn]').removeClass('disabled')
       n = set.length
       venn = {}
       for i in [1 .. Math.pow(2,set.length)-1]
-          venn[i] = {str: counts[reverseStr(toBinary(n,i))] || 0}
+          do (i) ->
+              str = reverseStr(toBinary(n,i))
+              venn[i] = {str: counts[str] || 0}
+              venn[i]['click'] = () -> secondary_table(forRows, str, set)
       for s,i in set
-          venn[1<<i]['lbl'] = s['typ'] + s['name']
-      venn['click'] = (x) -> secondary_table(forRows, reverseStr(toBinary(n,x)), set)
+          do (s,i) ->
+              venn[1<<i]['lbl']   = s['typ'] + s['name']
+              venn[1<<i]['lblclick'] = () -> showTable(s['name'])
       draw_venn(n, '#file_set #venn', venn)
 
   # Return to 'table' if venn is disabled

@@ -32,7 +32,7 @@ draw_venn1 = (elem, opts) ->
     svg.circle(w/2,r, r)
        .style("fill", "cyan")
        .style("fill-opacity", ".5")
-    svg.text(opts[1]['lbl'], w/2, r/3, {anchor: 'start'})
+    svg.text(opts[1]['lbl'], w/2, r/3, {anchor: 'start', click: opts[1]['lblclick']})
     svg.text(opts[1]['str'], w/2, r,   opts[1])
 
 draw_venn2 = (elem, opts) ->
@@ -47,8 +47,8 @@ draw_venn2 = (elem, opts) ->
        .style("fill", "#ff6405")
 
     b1=1; b2=2;
-    svg.text(opts[b1]['lbl'], w/2-r/2, r/2, {anchor: 'end'})  # left
-    svg.text(opts[b2]['lbl'], w/2+r/2, r/2, {anchor: 'start'})    # right
+    svg.text(opts[b1]['lbl'], w/2-r/2, r/2, {anchor: 'end', click: opts[b1]['lblclick']})  # left
+    svg.text(opts[b2]['lbl'], w/2+r/2, r/2, {anchor: 'start', click: opts[b2]['lblclick']})    # right
 
     ss = [{ind: b1, x: r/2, y: r},
           {ind: b2, x: 5*r/2, y: r},
@@ -73,9 +73,9 @@ draw_venn3 = (elem, opts) ->
 
     b1=1; b2=2; b3=4;
 
-    svg.text(opts[b1]['lbl'], w/4, r/4,        {anchor: 'end'})  # top
-    svg.text(opts[b2]['lbl'], w/10, r+2*z,     {anchor: 'end'})    # left
-    svg.text(opts[b3]['lbl'], w-r/3, r+2*z,    {anchor: 'start'})  # right
+    svg.text(opts[b1]['lbl'], w/4, r/4,        {anchor: 'end', click: opts[b1]['lblclick']})  # top
+    svg.text(opts[b2]['lbl'], w/10, r+2*z,     {anchor: 'end', click: opts[b2]['lblclick']})    # left
+    svg.text(opts[b3]['lbl'], w-r/3, r+2*z,    {anchor: 'start', click: opts[b3]['lblclick']})  # right
 
     ss = [{ind: b1,    x: w/2,   y: r/2},
           {ind: b2,    x: w/2-r, y: r+z+1.0*z/2.0 },
@@ -133,10 +133,10 @@ draw_venn4 = (elem, opts) ->
 
     b1=1; b2=2; b3=4; b4=8;
 
-    text(opts[b1]['lbl'], 190,  900,       {anchor: 'end'})
-    text(opts[b2]['lbl'], 260,  810,       {anchor: 'end'})
-    text(opts[b3]['lbl'], 550,  810,       {anchor: 'start'})
-    text(opts[b4]['lbl'], 630,  900,       {anchor: 'start'})
+    text(opts[b1]['lbl'], 190,  900,       {anchor: 'end', click: opts[b1]['lblclick']})
+    text(opts[b2]['lbl'], 260,  810,       {anchor: 'end', click: opts[b2]['lblclick']})
+    text(opts[b3]['lbl'], 550,  810,       {anchor: 'start', click: opts[b3]['lblclick']})
+    text(opts[b4]['lbl'], 630,  900,       {anchor: 'start', click: opts[b4]['lblclick']})
 
     ss= [{ind: b1, x: 215, y: 950},
          {ind: b2, x: 295, y: 840},
