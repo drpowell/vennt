@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="venn.css">
+    <link rel="stylesheet" type="text/css" href="dge.css">
+
+    <!-- Boostrap CSS -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
+
+    <!-- jQuery -->
+    <script type="text/javascript" charset="utf8" src="lib/jquery-1.8.2.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css" />
+
+    <!-- DataTables -->
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+
+    <script src="lib/d3.v2.js"></script>
+
+    <script src="data.json" type="text/javascript"></script>
+    <script src="slider.js" type="text/javascript"></script>
+    <script src="venn.js" type="text/javascript"></script>
+    <script src="dge.js" type="text/javascript"></script>
+  </head>
+
+  <body>
+    <div class='container'>
+      <div class='fdr'>
+        <strong>FDR cut-off</strong>
+        <div id='fdrSlider'></div>
+        <input class="fdr-fld" type="text" value="0.01" />
+      </div>
+
+      <h1>DGE lists</h1>
+      <div class='row'>
+        <div class='col-md-4'>
+          <ul id='files' class='list-unstyled'></ul>
+        </div>
+        <div id='file_set' class='col-md-8 tabbable tabs-right'>
+          <ul class="nav nav-tabs">
+            <li data-target='table'><a href="#">Table</a></li>
+            <li data-target='venn'><a href="#">Venn</a></li>
+          </ul>
+          <div id=table class='tab-content'>
+            <table class='table'></table>
+          </div>
+          <div id=venn class='tab-content'>
+          </div>
+        </div>
+      </div>
+
+      <h2>Genes</h2>
+      <div id='demo'>demo</div>
+    </div>
+
+</body>
+</html>
+

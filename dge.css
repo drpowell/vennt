@@ -1,0 +1,49 @@
+
+#demo .pos { background-color: #dfd }
+#demo .neg { background-color: #fdd }
+#demo .nosig { opacity: 0.4; }
+
+.file { width: 200px; display: inline-block; }
+
+.selectable {
+    width: 50px;
+    display: inline-block;
+    text-align: right;
+    padding: 2px;
+}
+.total { background-color: #ddd;     text-align: right !important;}
+.up    { background-color: #dfd; }
+.down  { background-color: #fdd; }
+
+div.fdr { float: right; }
+input.fdr-fld { width: 70px; }
+div#fdrSlider { display: inline-block; width: 100px }
+.error { background-color: #fbb; }
+
+span.selected { border: 2px blue solid; padding: 0; }
+
+.rotate {
+  -o-transform:      rotate(-45deg);
+  -khtml-transform:  rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  -moz-transform:    rotate(-45deg);
+
+  width: 20px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+
+#file_set #venn {
+  height: 280px;
+  overflow: visible;
+}
+
+#file_set table {
+  margin-top: 100px;
+}
+
+#file_set td.ticks {
+  padding-right: 35px;
+}
