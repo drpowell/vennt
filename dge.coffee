@@ -202,6 +202,7 @@ class Data
 
 class GeneTable
     constructor: (@opts) ->
+        @_init_download_link()
         grid_options =
             enableCellNavigation: true
             enableColumnReorder: false
@@ -310,13 +311,26 @@ class GeneTable
     refresh: () ->
         @grid.invalidate()
 
-    set_data: (data, columns) ->
+    set_data: (@data, @columns) ->
         @dataView.beginUpdate()
         @grid.setColumns([])
-        @dataView.setItems(data)
+        @dataView.setItems(@data)
         @dataView.reSort()
         @dataView.endUpdate()
-        @grid.setColumns(columns)
+        @grid.setColumns(@columns)
+
+    _init_download_link: () ->
+        $('a#csv-download').on('click', (e) =>
+            e.preventDefault()
+            return if @data.length==0
+            cols = @columns
+            items = @data
+            keys = cols.map((c) -> c.name)
+            rows = items.map( (r) -> cols.map( (c) -> r[c.id] ) )
+            window.open("data:text/csv,"+escape(d3.csv.format([keys].concat(rows))), "file.csv")
+        )
+
+
 
 class SelectorTable
     elem = "#files"

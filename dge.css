@@ -10,6 +10,7 @@
 
 .supported-by { font-size: 10px; }
 
+a#csv-download { font-size: 9pt; float: right; margin: -7px 30px 0 0; }
 
 /* Gene list (slickgrid) ********************************************/
 
