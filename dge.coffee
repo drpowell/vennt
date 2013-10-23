@@ -128,26 +128,26 @@ class Overlaps
         rows = []
         @_forRows(set, (key, rowSet) ->
             if key==k
-                row = null
+                row = []
                 for s in set
-                    if !row
-                        row = [ rowSet[s.name][id_column] ]
+                    if !row.id
+                        row.id = rowSet[s.name][id_column]
                     row.push rowSet[s.name][logFCcol]
                 rows.push(row)
         )
 
         desc = []
-        cols = [{sTitle:"Feature"}, {sTitle:"product"}]
+        cols = [@gene_table.mk_column('id', id_column, '')]
         i=0
         for s in set
-            cols.push({sTitle:"logFC - #{s['name']}"})
+            cols.push(@gene_table.mk_column(i, "logFC - #{s['name']}", 'logFC'))
             desc.push(@_tick_or_cross(k[i]) + s['typ'] + s['name'])
             i+=1
 
         descStr = "<ul class='list-unstyled'>"+desc.map((s) -> "<li>"+s).join('')+"</ul>"
         @gene_table.set_name_and_desc("",descStr)
 
-        console.log rows
+        @gene_table.set_data(rows, cols)
 
 class Data
     constructor: (rows) ->
@@ -242,7 +242,7 @@ class GeneTable
     _meta_formatter: (item, ret) ->
         ret ?= {}
         ret.cssClasses ?= ''
-        ret.cssClasses += if item[fdrCol] <= g_fdr_cutoff then 'sig' else 'nosig'
+        ret.cssClasses += if item[fdrCol] > g_fdr_cutoff then 'nosig' else 'sig'
         ret
 
     _get_formatter: (type, val) ->
@@ -268,18 +268,13 @@ class GeneTable
                 else
                     comparer(x, y)
 
-    _mk_column: (fld, name, type) ->
+    mk_column: (fld, name, type) ->
         id: fld
         field: fld
         name: name
         sortable: true
         formatter: (i,c,val,m,row) => @_get_formatter(type, val)
         sortFunc: @_get_sort_func(type, fld)
-
-    _columns: () ->
-        [@_mk_column(id_column, id_column, ''),
-         @_mk_column(logFCcol, logFCcol, 'logFC'),
-         @_mk_column(fdrCol, fdrCol, 'FDR')]
 
     _sorter: (args) ->
         if args.sortCol.sortFunc
@@ -295,13 +290,13 @@ class GeneTable
     refresh: () ->
         @grid.invalidate()
 
-    set_data: (data) ->
+    set_data: (data, columns) ->
         @dataView.beginUpdate()
         @grid.setColumns([])
         @dataView.setItems(data)
         @dataView.reSort()
         @dataView.endUpdate()
-        @grid.setColumns(@_columns())
+        @grid.setColumns(columns)
 
 class SelectorTable
     elem = "#files"
@@ -323,7 +318,11 @@ class SelectorTable
 
     selected: (name) ->
         rows = @data.get_data_for_key(name)
-        @gene_table.set_data(rows)
+
+        columns = [@gene_table.mk_column(id_column, id_column, ''),
+                   @gene_table.mk_column(logFCcol, logFCcol, 'logFC'),
+                   @gene_table.mk_column(fdrCol, fdrCol, 'FDR')]
+        @gene_table.set_data(rows, columns)
         @gene_table.set_name_and_desc("for '#{name}'", "")
 
     set_all_counts: () ->
@@ -382,8 +381,5 @@ class DGEVenn
         g_fdr_cutoff = v
         @slider.set_slider(v)
         @selector.set_all_counts()
-
-        #update_selected()
-        #update_rows_significance()
 
 $(document).ready(() -> new DGEVenn())
