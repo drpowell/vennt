@@ -31,24 +31,20 @@
 .up    { background-color: #dfd; }
 .down  { background-color: #fdd; }
 
-div.fdr { float: right; }
-input.fdr-fld { width: 70px; }
-div#fdrSlider { display: inline-block; width: 100px }
-.error { background-color: #fbb; }
-
 span.selected { border: 2px blue solid; padding: 0; }
 
-.rotate {
-  -o-transform:      rotate(-45deg);
-  -khtml-transform:  rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-  -moz-transform:    rotate(-45deg);
 
-  width: 20px;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
+/* Options ********************************************************/
+.options {
+    background: #f4f4f4;
+    border-radius: 5px;
+    border: thin solid black;
+    padding: 10px;
 }
+
+input.fdr-fld { width: 70px; }
+div#fdrSlider { display: inline-block; width: 130px; margin: 0 5px; }
+.error { background-color: #fbb; }
 
 
 /* Venn diagram and table *****************************************/
@@ -69,3 +65,16 @@ span.selected { border: 2px blue solid; padding: 0; }
 #venn text.lbl:hover {
     text-decoration: initial;
 }
+
+.rotate {
+  -o-transform:      rotate(-45deg);
+  -khtml-transform:  rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  -moz-transform:    rotate(-45deg);
+
+  width: 20px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+

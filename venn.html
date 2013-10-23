@@ -29,16 +29,20 @@
 
   <body>
     <div class='container'>
-      <div class='fdr'>
-        <strong>FDR cut-off</strong>
-        <div id='fdrSlider'></div>
-        <input class="fdr-fld" type="text" value="0.01" />
-      </div>
-
       <div class='row'>
         <div class='col-md-4'>
           <h1>DGE lists</h1>
           <ul id='files' class='list-unstyled'></ul>
+
+          <div class='options'>
+            <h3>Options</h3>
+            <div class='fdr'>
+              <strong>FDR threshold</strong>
+              <div id='fdrSlider'></div>
+              <input class="fdr-fld" type="text" value="0.01" />
+            </div>
+          </div>
+
         </div>
         <div id='overlaps' class='col-md-8 tabbable tabs-right'>
           <ul class="nav nav-tabs">
