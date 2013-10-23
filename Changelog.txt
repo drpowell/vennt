@@ -1,2 +1,5 @@
+v0.2
+  * Added a link to download the currently displayed table as CSV
+
 v0.1
   * Initial version

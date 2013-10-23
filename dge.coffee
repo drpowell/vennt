@@ -1,4 +1,4 @@
-dge_venn_version = '0.1'
+dge_venn_version = '0.2'
 
 window.venn_settings ?= {}
 key_column   = null
