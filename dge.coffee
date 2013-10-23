@@ -382,6 +382,8 @@ class DGEVenn
         d3.csv(csv_file, (rows) => @_data_ready(rows))
 
     _data_ready: (rows) ->
+        $('#wrap > .container').show()
+        $('#loading').hide()
         data = new Data(rows)
         @selector = new SelectorTable(data)
 

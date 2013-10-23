@@ -1,13 +1,18 @@
 
 /* Top level styling **********************************************/
 
+#loading { position: absolute; top: 100px; left: 250px; }
+
 #wrap > .container {
   padding: 0 15px 0;
+  display: none;
 }
 
 .supported-by { font-size: 10px; }
 
-/* Misc formatting ********************************************/
+
+/* Gene list (slickgrid) ********************************************/
+
 .pos { background-color: #dfd; height: 25px; }
 .neg { background-color: #fdd; height: 25px; }
 .nosig { opacity: 0.6; }
@@ -28,6 +33,8 @@
 }
 .slick-header-column { height: auto !important; }
 
+/* List selector table ********************************************/
+
 .file { width: 185px; display: inline-block; }
 
 .selectable {
@@ -45,7 +52,6 @@
 .down  { background-color: #fdd; }
 
 span.selected { border: 2px blue solid; padding: 0; }
-
 
 /* Options ********************************************************/
 .options {
