@@ -295,9 +295,6 @@ class GeneTable
         @dataView.endUpdate()
         @grid.setColumns(@_columns())
 
-        #set_pos_neg(dat[2], row))
-        #update_rows_significance()
-
 class SelectorTable
     elem = "#files"
     constructor: (@data) ->
@@ -305,7 +302,6 @@ class SelectorTable
         @overlaps = new Overlaps(@data)
         @_mk_selector()
         @set_all_counts()
-        #update_selected()
 
     _mk_selector: () ->
         span = (clazz) -> "<span class='selectable #{clazz}'></span>"
@@ -325,6 +321,7 @@ class SelectorTable
     set_all_counts: () ->
         $('li',elem).each((i,e) => @set_counts(e))
         @gene_table.refresh()
+        @overlaps.update_selected()
 
     set_counts: (li) ->
         name = $(li).attr('class')
