@@ -25,34 +25,34 @@ class SVG
             s.on(ev, opts[ev]) if opts[ev]?
 
 draw_venn1 = (elem, opts) ->
-    w = 300
+    w = 600
     h = 300
     r = 400/3
     svg = new SVG(elem, w, h, 5)
-    svg.circle(w/2,r, r)
+    svg.circle(150,r, r)
        .style("fill", "cyan")
        .style("fill-opacity", ".5")
-    svg.text(opts[1]['lbl'], w/2, r/3, {anchor: 'start', click: opts[1]['lblclick']})
-    svg.text(opts[1]['str'], w/2, r,   opts[1])
+    svg.text(opts[1]['lbl'], 270, r/3, {anchor: 'start', click: opts[1]['lblclick']})
+    svg.text(opts[1]['str'], 150, r,   opts[1])
 
 draw_venn2 = (elem, opts) ->
-    w = 400
-    h = 300
+    w = 600
+    h = 350
     r = 400/3
     z = r*Math.sqrt(3)/2
     svg = new SVG(elem, w, h, 5)
-    svg.circle(r,r, r)
+    svg.circle(r,r+50, r)
        .style("fill", "#6fff05")
-    svg.circle(2*r,r, r)
+    svg.circle(2*r,r+50, r)
        .style("fill", "#ff6405")
 
     b1=1; b2=2;
-    svg.text(opts[b1]['lbl'], w/2-r/2, r/2, {anchor: 'end', click: opts[b1]['lblclick']})  # left
-    svg.text(opts[b2]['lbl'], w/2+r/2, r/2, {anchor: 'start', click: opts[b2]['lblclick']})    # right
+    svg.text(opts[b1]['lbl'], r+20, 30, {anchor: 'end', click: opts[b1]['lblclick']})  # left
+    svg.text(opts[b2]['lbl'], 2*r-20, 30, {anchor: 'start', click: opts[b2]['lblclick']})    # right
 
-    ss = [{ind: b1, x: r/2, y: r},
-          {ind: b2, x: 5*r/2, y: r},
-          {ind: b1|b2, x: 3*r/2, y: r}]
+    ss = [{ind: b1, x: r/2, y: r+50},
+          {ind: b2, x: 5*r/2, y: r+50},
+          {ind: b1|b2, x: 3*r/2, y: r+50}]
 
     for s in ss
         do (s) ->
@@ -60,22 +60,26 @@ draw_venn2 = (elem, opts) ->
 
 draw_venn3 = (elem, opts) ->
     w = 400
+    w2 = 600
     h = 380
     r = 400/3
     z = r*Math.sqrt(3)/2.0
-    svg = new SVG(elem, w, h, 30)
-    svg.circle(w/2,r, r)
+
+    lm = 100 # left margin
+
+    svg = new SVG(elem, w2, h, 30)
+    svg.circle(w/2+lm,r, r)
        .style("fill", "#6fff05")
-    svg.circle(r,r+z, r)
+    svg.circle(r+lm,r+z, r)
        .style("fill", "#ff6405")
-    svg.circle(2*r,r+z, r)
+    svg.circle(2*r+lm,r+z, r)
        .style("fill", "#0525ff")
 
     b1=1; b2=2; b3=4;
 
-    svg.text(opts[b1]['lbl'], w/4, r/4,        {anchor: 'end', click: opts[b1]['lblclick']})  # top
-    svg.text(opts[b2]['lbl'], w/10, r+2*z,     {anchor: 'end', click: opts[b2]['lblclick']})    # left
-    svg.text(opts[b3]['lbl'], w-r/3, r+2*z,    {anchor: 'start', click: opts[b3]['lblclick']})  # right
+    svg.text(opts[b1]['lbl'], w/4+lm, r/4,        {anchor: 'end', click: opts[b1]['lblclick']})  # top
+    svg.text(opts[b2]['lbl'], w/10+lm, r+2*z,     {anchor: 'end', click: opts[b2]['lblclick']})    # left
+    svg.text(opts[b3]['lbl'], w-r/3+lm, r+2*z,    {anchor: 'start', click: opts[b3]['lblclick']})  # right
 
     ss = [{ind: b1,    x: w/2,   y: r/2},
           {ind: b2,    x: w/2-r, y: r+z+1.0*z/2.0 },
@@ -88,14 +92,14 @@ draw_venn3 = (elem, opts) ->
 
     for s in ss
         do (s) ->
-            svg.text(opts[s.ind].str, s.x, s.y, opts[s.ind])
+            svg.text(opts[s.ind].str, s.x+lm, s.y, opts[s.ind])
 
 draw_venn4 = (elem, opts) ->
     rx=187
     ry=115
-    svg = new SVG(elem, 600, 500,0)
+    svg = new SVG(elem, 750, 390,0)
     z = svg.svg.append("g")
-           .attr("transform","translate(-123,-785)")
+           .attr("transform","translate(-50,-785)")
     z.append("g")
        .attr("transform","translate(479,1024) rotate(-40)")
        .append("ellipse")
