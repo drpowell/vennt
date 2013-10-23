@@ -1,4 +1,13 @@
 
+/* Top level styling **********************************************/
+
+#wrap > .container {
+  padding: 0 15px 0;
+}
+
+.supported-by { font-size: 10px; }
+
+/* Misc formatting ********************************************/
 .pos { background-color: #dfd; height: 25px; }
 .neg { background-color: #fdd; height: 25px; }
 .nosig { opacity: 0.6; }
@@ -19,7 +28,7 @@
 }
 .slick-header-column { height: auto !important; }
 
-.file { width: 200px; display: inline-block; }
+.file { width: 185px; display: inline-block; }
 
 .selectable {
     width: 50px;
@@ -27,6 +36,10 @@
     text-align: right;
     padding: 2px;
 }
+.selectable:hover {
+    text-decoration: underline;
+}
+
 .total { background-color: #ddd; text-align: right !important;}
 .up    { background-color: #dfd; }
 .down  { background-color: #fdd; }
@@ -40,6 +53,7 @@ span.selected { border: 2px blue solid; padding: 0; }
     border-radius: 5px;
     border: thin solid black;
     padding: 10px;
+    margin-bottom: 5px;
 }
 
 input.fdr-fld { width: 70px; }
