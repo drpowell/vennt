@@ -311,6 +311,12 @@ class SelectorTable
         @overlaps = new Overlaps(@gene_table, @data)
         @_mk_selector()
         @set_all_counts()
+        @_initial_selection()
+
+    _initial_selection: () ->
+        @selected(@data.keys[0])
+        $('.selectable.total')[0..2].addClass('selected')
+        @overlaps.update_selected()
 
     _mk_selector: () ->
         span = (clazz) -> "<span class='selectable #{clazz}'></span>"
@@ -363,7 +369,6 @@ class DGEVenn
     _data_ready: (rows) ->
         data = new Data(rows)
         @selector = new SelectorTable(data)
-        @selector.selected(data.keys[0])
 
         @_setup_fdr_slider()
 
