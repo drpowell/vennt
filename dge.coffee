@@ -1,6 +1,9 @@
 
 g_fdr_cutoff = 0.01
-
+key_column = 'key'
+id_column = 'Feature'
+fdrCol = 'adj.P.Val'
+logFCcol = 'logFC'
 
 class Overlaps
     constructor: (@data) ->
@@ -53,20 +56,17 @@ class Overlaps
 
         for k,v of counts
             continue if Number(k) == 0
-            tr = $('<tr>')
-            for x in k.split('')
-                tr.append("<td class='ticks'>#{tick_or_cross(x)}")
-            tr.append("<td class='total'><a href='#'>#{v}</a>")
-            $(table).append(tr)
+            do (k,v) =>
+                tr = $('<tr>')
+                for x in k.split('')
+                    tr.append("<td class='ticks'>#{tick_or_cross(x)}")
+                tr.append("<td class='total'><a href='#'>#{v}</a>")
+                $(table).append(tr)
 
-            # Ridiculous hack so 'k' is not used in callback.  Necessary because of daft js scoping
-            do (k) ->
                 $('tr a:last',table).click(() -> secondary_table(forRows, k, set))
 
         $('#overlaps #venn-table').empty()
         $('#overlaps #venn-table').append(table)
-
-
 
     _mk_venn_diagram: (set, counts) ->
         # Draw venn diagram
@@ -147,11 +147,6 @@ secondary_table = (forRows, k, set) ->
                                  $(td).addClass(if (k[i-2] == '1') then 'sig' else 'nosig')
            )
 
-
-key_column = 'key'
-id_column = 'Feature'
-fdrCol = 'adj.P.Val'
-logFCcol = 'logFC'
 
 class Data
     constructor: (rows) ->
