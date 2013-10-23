@@ -44,6 +44,8 @@ span.selected { border: 2px blue solid; padding: 0; }
 }
 
 
+/* Venn diagram and table *****************************************/
+
 #overlaps #venn {
   overflow: visible;
 }

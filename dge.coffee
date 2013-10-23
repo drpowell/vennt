@@ -5,8 +5,21 @@ id_column = 'Feature'
 fdrCol = 'adj.P.Val'
 logFCcol = 'logFC'
 
+setup_tabs = ->
+    $('#overlaps .nav a').click (el) -> clickTab($(el.target).parent('li'))
+    clickTab($('#overlaps li[data-target=venn]'))
+
+clickTab = (li) ->
+    return if $(li).hasClass('disabled')
+    $('#overlaps .nav li').removeClass('active')
+    li.addClass('active')
+    id = li.attr('data-target')
+    $('#overlaps #venn-table, #overlaps #venn').hide()
+    $('#overlaps #'+id).show()
+
+
 class Overlaps
-    constructor: (@data) ->
+    constructor: (@gene_table, @data) ->
 
     get_selected: () ->
       sels = $('.selected')
@@ -30,21 +43,25 @@ class Overlaps
                 func: (row) -> row[fdrCol] < g_fdr_cutoff && row[logFCcol]<0
       res
 
-    _forRows: (cb) ->
-        set = @get_selected()
+    _forRows: (set, cb) ->
         for id in @data.ids
             rowSet = @data.get_data_for_id(id)
             key = ""
             for s in set
                 row = rowSet[s.name]
                 key += if s.func(row) then "1" else "0"
-            cb(key, rowSet, row)
+            cb(key, rowSet)
 
 
     _int_to_key: (size, i) ->
         toBinary = (n,x) -> ("00000" +  x.toString(2)).substr(-n)
         reverseStr = (s) -> s.split('').reverse().join('')
         reverseStr(toBinary(size,i))
+
+    _tick_or_cross: (x) ->
+        "<i class='glyphicon glyphicon-#{if x=='1' then 'ok' else 'remove'}'></i>"
+
+
 
     _mk_venn_table: (set,counts) ->
         table = $('<table>')
@@ -59,11 +76,11 @@ class Overlaps
             do (k,v) =>
                 tr = $('<tr>')
                 for x in k.split('')
-                    tr.append("<td class='ticks'>#{tick_or_cross(x)}")
+                    tr.append("<td class='ticks'>#{@_tick_or_cross(x)}")
                 tr.append("<td class='total'><a href='#'>#{v}</a>")
                 $(table).append(tr)
 
-                $('tr a:last',table).click(() -> secondary_table(forRows, k, set))
+                $('tr a:last',table).click(() => @_secondary_table(k, set))
 
         $('#overlaps #venn-table').empty()
         $('#overlaps #venn-table').append(table)
@@ -79,7 +96,7 @@ class Overlaps
                 do (i) =>
                     str = @_int_to_key(n,i)
                     venn[i] = {str: counts[str] || 0}
-                    venn[i]['click'] = () -> secondary_table(forRows, str, set)
+                    venn[i]['click'] = () => @_secondary_table(str, set)
             # Add the outer labels
             for s,i in set
                 do (s,i) ->
@@ -93,9 +110,10 @@ class Overlaps
         return if set.length==0
 
         counts={}
-        @_forRows (key) ->
+        @_forRows(set, (key) ->
             counts[key] ?= 0
             counts[key] += 1
+        )
 
         @_mk_venn_table(set, counts)
         @_mk_venn_diagram(set, counts)
@@ -106,47 +124,30 @@ class Overlaps
         if $('#overlaps li[data-target=venn]').hasClass("disabled")
             clickTab($('#overlaps li[data-target=venn-table]'))
 
-setup_tabs = ->
-    $('#overlaps .nav a').click (el) -> clickTab($(el.target).parent('li'))
-    clickTab($('#overlaps li[data-target=venn]'))
+    _secondary_table: (k, set) ->
+        rows = []
+        @_forRows(set, (key, rowSet) ->
+            if key==k
+                row = null
+                for s in set
+                    if !row
+                        row = [ rowSet[s.name][id_column] ]
+                    row.push rowSet[s.name][logFCcol]
+                rows.push(row)
+        )
 
-clickTab = (li) ->
-    return if $(li).hasClass('disabled')
-    $('#overlaps .nav li').removeClass('active')
-    li.addClass('active')
-    id = li.attr('data-target')
-    $('#overlaps #venn-table, #overlaps #venn').hide()
-    $('#overlaps #'+id).show()
+        desc = []
+        cols = [{sTitle:"Feature"}, {sTitle:"product"}]
+        i=0
+        for s in set
+            cols.push({sTitle:"logFC - #{s['name']}"})
+            desc.push(@_tick_or_cross(k[i]) + s['typ'] + s['name'])
+            i+=1
 
-tick_or_cross = (x) -> "<i class='glyphicon glyphicon-#{if x=="1" then "ok" else "remove"}'></i>"
+        descStr = "<ul class='list-unstyled'>"+desc.map((s) -> "<li>"+s).join('')+"</ul>"
+        @gene_table.set_name_and_desc("",descStr)
 
-secondary_table = (forRows, k, set) ->
-    dat = []
-    forRows (key, rowSet) ->
-        if key==k
-            row = rowSet[0][0..1]
-            row.push v[logFCcol] for v in rowSet
-            dat.push(row)
-
-    desc = []
-    cols = [{sTitle:"Feature"}, {sTitle:"product"}]
-    i=0
-    for s in set
-        cols.push({sTitle:"logFC - #{s['name']}"})
-        desc.push(tick_or_cross(k[i]) + s['typ'] + s['name'])
-        i+=1
-
-    descStr = "<ul class='unstyled'>"+desc.map((s) -> "<li>"+s).join('')+"</ul>"
-    mkTable(descStr, {aaData: dat, aoColumns: cols},
-            [[0, 'asc']],
-             (row, dat) ->
-                         $(row).removeClass('odd even')
-                         $("td", row).each (i, td) ->
-                             if i>=2
-                                 set_pos_neg(Number($(td).html()), td)
-                                 $(td).addClass(if (k[i-2] == '1') then 'sig' else 'nosig')
-           )
-
+        console.log rows
 
 class Data
     constructor: (rows) ->
@@ -223,6 +224,10 @@ class GeneTable
 
         @_setup_metadata_formatter((ret) => @_meta_formatter(ret))
 
+    set_name_and_desc: (name,desc) ->
+        $('#gene-list-name').html(name)
+        $('#gene-list-desc').html(desc)
+
     _setup_metadata_formatter: (formatter) ->
         row_metadata = (old_metadata_provider) ->
             (row) ->
@@ -240,39 +245,47 @@ class GeneTable
         ret.cssClasses += if item[fdrCol] <= g_fdr_cutoff then 'sig' else 'nosig'
         ret
 
-    _fc_div: (n) ->
-        get_pos_neg = (v) -> if (v >= 0) then "pos" else "neg"
-        "<div class='#{get_pos_neg(n)}'>#{n.toFixed(2)}</div>"
+    _get_formatter: (type, val) ->
+        switch type
+            when 'logFC'
+                cl = if (val >= 0) then "pos" else "neg"
+                "<div class='#{cl}'>#{val.toFixed(2)}</div>"
+            when 'FDR'
+                if val<0.01 then val.toExponential(2) else val.toFixed(2)
+            else
+                val
 
-    _columns: () ->
-        [id_column, logFCcol, fdrCol].map((col) =>
-            id: col
-            name: col
-            field: col
-            sortable: true
-            formatter: (i,c,val,m,row) =>
-                if col in [logFCcol]
-                    @_fc_div(val)
-                else if col in [fdrCol]
-                    if val<0.01 then val.toExponential(2) else val.toFixed(2)
-                else
-                    val
-        )
-
-    _sorter: (args) ->
+    _get_sort_func: (type, col) ->
         comparer = (x,y) -> (if x == y then 0 else (if x > y then 1 else -1))
-        col = args.sortCol.id
-        @dataView.sort((r1,r2) ->
+        (r1,r2) ->
             r = 0
             x=r1[col]; y=r2[col]
-            if col in [logFCcol]
-                r = comparer(Math.abs(x), Math.abs(y))
-            else if col in [fdrCol]
-                r = comparer(x, y)
-            else
-                r = comparer(x,y)
-            r * (if args.sortAsc then 1 else -1)
-        )
+            switch type
+                when 'logFC'
+                    comparer(Math.abs(x), Math.abs(y))
+                when 'FDR'
+                    comparer(x, y)
+                else
+                    comparer(x, y)
+
+    _mk_column: (fld, name, type) ->
+        id: fld
+        field: fld
+        name: name
+        sortable: true
+        formatter: (i,c,val,m,row) => @_get_formatter(type, val)
+        sortFunc: @_get_sort_func(type, fld)
+
+    _columns: () ->
+        [@_mk_column(id_column, id_column, ''),
+         @_mk_column(logFCcol, logFCcol, 'logFC'),
+         @_mk_column(fdrCol, fdrCol, 'FDR')]
+
+    _sorter: (args) ->
+        if args.sortCol.sortFunc
+            @dataView.sort(args.sortCol.sortFunc, args.sortAsc)
+        else
+            console.log "No sort function for",args.sortCol
 
     _update_info: () ->
         view = @grid.getViewport()
@@ -294,7 +307,7 @@ class SelectorTable
     elem = "#files"
     constructor: (@data) ->
         @gene_table = new GeneTable({elem:'#gene-table', elem_info: '#gene-table-info'})
-        @overlaps = new Overlaps(@data)
+        @overlaps = new Overlaps(@gene_table, @data)
         @_mk_selector()
         @set_all_counts()
 
@@ -311,7 +324,7 @@ class SelectorTable
     selected: (name) ->
         rows = @data.get_data_for_key(name)
         @gene_table.set_data(rows)
-        $('#gene-list-name').text("for '#{name}'")
+        @gene_table.set_name_and_desc("for '#{name}'", "")
 
     set_all_counts: () ->
         $('li',elem).each((i,e) => @set_counts(e))
