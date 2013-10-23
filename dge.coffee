@@ -101,7 +101,7 @@ class Overlaps
             for s,i in set
                 do (s,i) ->
                     venn[1<<i]['lbl']   = s['typ'] + s['name']
-                    venn[1<<i]['lblclick'] = () -> showTable(s['name'])
+                    #venn[1<<i]['lblclick'] = () -> console.log(s['name'])
             draw_venn(n, '#overlaps #venn', venn)
 
     # Handle the selected counts.  Generate the venn table and diagram

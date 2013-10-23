@@ -65,3 +65,7 @@ span.selected { border: 2px blue solid; padding: 0; }
 #overlaps td.ticks {
   padding-right: 35px;
 }
+
+#venn text.lbl:hover {
+    text-decoration: initial;
+}
