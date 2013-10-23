@@ -1,11 +1,23 @@
 dge_venn_version = '0.1'
 
+window.venn_settings ?= {}
+key_column   = null
+id_column    = null
+fdrCol       = null
+logFCcol     = null
+csv_file     = null
+info_columns = null
 
 g_fdr_cutoff = 0.01
-key_column = 'key'
-id_column = 'Feature'
-fdrCol = 'adj.P.Val'
-logFCcol = 'logFC'
+
+read_settings = () ->
+    window.venn_settings ?= {}
+    key_column   = venn_settings.key_column   || 'key'
+    id_column    = venn_settings.id_column    || 'Feature'
+    fdrCol       = venn_settings.fdr_column   || 'adj.P.Val'
+    logFCcol     = venn_settings.logFC_column || 'logFC'
+    csv_file     = venn_settings.csv_file     || 'data.csv'
+    info_columns = venn_settings.info_columns || [id_column]
 
 setup_tabs = ->
     $('#overlaps .nav a').click (el) -> clickTab($(el.target).parent('li'))
@@ -134,12 +146,14 @@ class Overlaps
                 for s in set
                     if !row.id
                         row.id = rowSet[s.name][id_column]
+                        info_columns.map((c) -> row[c] = rowSet[s.name][c])
+
                     row.push rowSet[s.name][logFCcol]
                 rows.push(row)
         )
 
         desc = []
-        cols = [@gene_table.mk_column('id', id_column, '')]
+        cols = info_columns.map((c) => @gene_table.mk_column(c, c, ''))
         i=0
         for s in set
             signif = k[i]=='1'
@@ -331,9 +345,9 @@ class SelectorTable
     selected: (name) ->
         rows = @data.get_data_for_key(name)
 
-        columns = [@gene_table.mk_column(id_column, id_column, ''),
-                   @gene_table.mk_column(logFCcol, logFCcol, 'logFC'),
-                   @gene_table.mk_column(fdrCol, fdrCol, 'FDR')]
+        columns = info_columns.map((c) => @gene_table.mk_column(c, c, ''))
+        columns.push(@gene_table.mk_column(logFCcol, logFCcol, 'logFC'),
+                     @gene_table.mk_column(fdrCol, fdrCol, 'FDR'))
         @gene_table.set_data(rows, columns)
         @gene_table.set_name_and_desc("for '#{name}'", "")
 
@@ -361,10 +375,11 @@ class SelectorTable
 
 class DGEVenn
     constructor: () ->
+        read_settings()
         setup_tabs()
         $("input.fdr-fld").value = g_fdr_cutoff
 
-        d3.csv("data.csv", (rows) => @_data_ready(rows))
+        d3.csv(csv_file, (rows) => @_data_ready(rows))
 
     _data_ready: (rows) ->
         data = new Data(rows)
