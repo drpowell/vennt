@@ -1,7 +1,7 @@
 
 .pos { background-color: #dfd; height: 25px; }
 .neg { background-color: #fdd; height: 25px; }
-.nosig { opacity: 0.4; }
+.nosig { opacity: 0.6; }
 
 /* Turn off bootstrap 3 "border-box" sizing - slickgrid no likey */
 #gene-table, #gene-table div {

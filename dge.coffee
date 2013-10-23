@@ -59,7 +59,7 @@ class Overlaps
         reverseStr(toBinary(size,i))
 
     _tick_or_cross: (x) ->
-        "<i class='glyphicon glyphicon-#{if x=='1' then 'ok' else 'remove'}'></i>"
+        "<i class='glyphicon glyphicon-#{if x then 'ok' else 'remove'}'></i>"
 
 
 
@@ -76,7 +76,7 @@ class Overlaps
             do (k,v) =>
                 tr = $('<tr>')
                 for x in k.split('')
-                    tr.append("<td class='ticks'>#{@_tick_or_cross(x)}")
+                    tr.append("<td class='ticks'>#{@_tick_or_cross(x=='1')}")
                 tr.append("<td class='total'><a href='#'>#{v}</a>")
                 $(table).append(tr)
 
@@ -140,8 +140,10 @@ class Overlaps
         cols = [@gene_table.mk_column('id', id_column, '')]
         i=0
         for s in set
-            cols.push(@gene_table.mk_column(i, "logFC - #{s['name']}", 'logFC'))
-            desc.push(@_tick_or_cross(k[i]) + s['typ'] + s['name'])
+            signif = k[i]=='1'
+            css = if signif then {} else {cssClass: 'nosig'}
+            cols.push(@gene_table.mk_column(i, "logFC - #{s['name']}", 'logFC', css))
+            desc.push(@_tick_or_cross(signif) + s['typ'] + s['name'])
             i+=1
 
         descStr = "<ul class='list-unstyled'>"+desc.map((s) -> "<li>"+s).join('')+"</ul>"
@@ -268,13 +270,15 @@ class GeneTable
                 else
                     comparer(x, y)
 
-    mk_column: (fld, name, type) ->
-        id: fld
-        field: fld
-        name: name
-        sortable: true
-        formatter: (i,c,val,m,row) => @_get_formatter(type, val)
-        sortFunc: @_get_sort_func(type, fld)
+    mk_column: (fld, name, type, opts={}) ->
+        o =
+            id: fld
+            field: fld
+            name: name
+            sortable: true
+            formatter: (i,c,val,m,row) => @_get_formatter(type, val)
+            sortFunc: @_get_sort_func(type, fld)
+        $.extend(o, opts)
 
     _sorter: (args) ->
         if args.sortCol.sortFunc
