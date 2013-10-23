@@ -1,122 +1,122 @@
 
 g_fdr_cutoff = 0.01
 
-get_pos_neg = (v) -> if (v >= 0) then "pos" else "neg"
 
-get_selected = ->
-  sels = $('.selected')
-  res = []
-  for sel in sels
-      name = $(sel).parent('li').attr('class')
-      if $(sel).hasClass('total')
-        res.push
-            name: name
-            typ: '' # 'Up/Down'
-            func: (row) -> row[fdrCol] < fdr_cutoff
-      else if $(sel).hasClass('up')
-        res.push
-            name: name
-            typ: 'Up : '
-            func: (row) -> row[fdrCol] < fdr_cutoff && row[logFCcol]>=0
-      else if $(sel).hasClass('down')
-        res.push
-            name: name
-            typ: 'Down : '
-            func: (row) -> row[fdrCol] < fdr_cutoff && row[logFCcol]<0
-  res
+class Overlaps
+    constructor: (@data) ->
 
-# Handle the selected counts.  Generate the venn table and diagram
-update_selected = ->
+    get_selected: () ->
+      sels = $('.selected')
+      res = []
+      for sel in sels
+          name = $(sel).parent('li').attr('class')
+          if $(sel).hasClass('total')
+            res.push
+                name: name
+                typ: '' # 'Up/Down'
+                func: (row) -> row[fdrCol] < g_fdr_cutoff
+          else if $(sel).hasClass('up')
+            res.push
+                name: name
+                typ: 'Up : '
+                func: (row) -> row[fdrCol] < g_fdr_cutoff && row[logFCcol]>=0
+          else if $(sel).hasClass('down')
+            res.push
+                name: name
+                typ: 'Down : '
+                func: (row) -> row[fdrCol] < g_fdr_cutoff && row[logFCcol]<0
+      res
 
-  $('#file_set').hide()
-  $('#file_set table').empty()
-  set = get_selected()
-  return if set.length==0
-  $('#file_set').show()
+    _forRows: (cb) ->
+        set = @get_selected()
+        for id in @data.ids
+            rowSet = @data.get_data_for_id(id)
+            key = ""
+            for s in set
+                row = rowSet[s.name]
+                key += if s.func(row) then "1" else "0"
+            cb(key, rowSet, row)
 
-  rows = []
-  for name, d of globalData['data']
-    rows = d['aaData']
-    break
 
-  forRows = (cb) ->
-              for i in [0..rows.length-1]
-                  key=""
-                  rowSet = []
-                  for s in set
-                      # TODO  - check files are sorted by gene!
-                      row = globalData['data'][s['name']]['aaData'][i]
-                      rowSet.push(row)
-                      if s['func'](row)
-                        key += "1"
-                      else
-                        key += "0"
-                  cb(key, rowSet, set)
+    _int_to_key: (size, i) ->
+        toBinary = (n,x) -> ("00000" +  x.toString(2)).substr(-n)
+        reverseStr = (s) -> s.split('').reverse().join('')
+        reverseStr(toBinary(size,i))
 
-  counts={}
-  forRows (key) ->
-      counts[key] ?= 0
-      counts[key] += 1
+    _mk_venn_table: (set,counts) ->
+        table = $('<table>')
+        str = '<thead><tr>'
+        for s in set
+            str += "<th><div class='rotate'>#{s['typ']}#{s['name']}</div></th>"
+        str += "<th>Number</tr></thead>"
+        table.html(str)
 
-  tr = $(document.createElement('tr'))
-  for s in set
-    tr.append("<th><div class='rotate'>#{s['typ']}#{s['name']}</div></th>")
-  tr.append("<th>Number")
-  $('#file_set table').append('<thead>')
-  $('#file_set table thead').append(tr)
-  $('#file_set table').append('<tbody>')
+        for k,v of counts
+            continue if Number(k) == 0
+            tr = $('<tr>')
+            for x in k.split('')
+                tr.append("<td class='ticks'>#{tick_or_cross(x)}")
+            tr.append("<td class='total'><a href='#'>#{v}</a>")
+            $(table).append(tr)
 
-  for k,v of counts
-    continue if Number(k) == 0
-    tr = $(document.createElement('tr'))
-    for x in k.split('')
-        tr.append("<td class='ticks'>#{tick_or_cross(x)}")
-    tr.append("<td class='total'><a href='#'>#{v}</a>")
-    $('#file_set table').append(tr)
+            # Ridiculous hack so 'k' is not used in callback.  Necessary because of daft js scoping
+            do (k) ->
+                $('tr a:last',table).click(() -> secondary_table(forRows, k, set))
 
-    # Ridiculous hack so 'k' is not used in callback.  Necessary because of daft js scoping
-    do (k) ->
-        $('#file_set table tr a:last').click(() -> secondary_table(forRows, k, set))
+        $('#overlaps #venn-table').empty()
+        $('#overlaps #venn-table').append(table)
 
-  $('#file_set li[data-target=venn]').addClass('disabled')
 
-  # Draw venn diagram
-  $('#file_set svg').remove()
-  if set.length<=4
-      $('#file_set li[data-target=venn]').removeClass('disabled')
-      n = set.length
-      venn = {}
-      # All numbers in the venn
-      for i in [1 .. Math.pow(2,set.length)-1]
-          do (i) ->
-              str = reverseStr(toBinary(n,i))
-              venn[i] = {str: counts[str] || 0}
-              venn[i]['click'] = () -> secondary_table(forRows, str, set)
-      # Add the outer labels
-      for s,i in set
-          do (s,i) ->
-              venn[1<<i]['lbl']   = s['typ'] + s['name']
-              venn[1<<i]['lblclick'] = () -> showTable(s['name'])
-      draw_venn(n, '#file_set #venn', venn)
 
-  # Return to 'table' if venn is disabled
-  if $('#file_set li[data-target=venn]').hasClass("disabled")
-      clickTab($('#file_set li[data-target=table]'))
+    _mk_venn_diagram: (set, counts) ->
+        # Draw venn diagram
+        $('#overlaps svg').remove()
+        if set.length<=4
+            n = set.length
+            venn = {}
+            # All numbers in the venn
+            for i in [1 .. Math.pow(2,set.length)-1]
+                do (i) =>
+                    str = @_int_to_key(n,i)
+                    venn[i] = {str: counts[str] || 0}
+                    venn[i]['click'] = () -> secondary_table(forRows, str, set)
+            # Add the outer labels
+            for s,i in set
+                do (s,i) ->
+                    venn[1<<i]['lbl']   = s['typ'] + s['name']
+                    venn[1<<i]['lblclick'] = () -> showTable(s['name'])
+            draw_venn(n, '#overlaps #venn', venn)
+
+    # Handle the selected counts.  Generate the venn table and diagram
+    update_selected: () ->
+        set = @get_selected()
+        return if set.length==0
+
+        counts={}
+        @_forRows (key) ->
+            counts[key] ?= 0
+            counts[key] += 1
+
+        @_mk_venn_table(set, counts)
+        @_mk_venn_diagram(set, counts)
+
+        $('#overlaps li[data-target=venn]').toggleClass('disabled', set.length>4)
+
+        # Return to 'venn-table' if venn is disabled
+        if $('#overlaps li[data-target=venn]').hasClass("disabled")
+            clickTab($('#overlaps li[data-target=venn-table]'))
 
 setup_tabs = ->
-    $('#file_set .nav a').click (el) -> clickTab($(el.target).parent('li'))
-    clickTab($('#file_set li[data-target=venn]'))
+    $('#overlaps .nav a').click (el) -> clickTab($(el.target).parent('li'))
+    clickTab($('#overlaps li[data-target=venn]'))
 
 clickTab = (li) ->
     return if $(li).hasClass('disabled')
-    $('#file_set .nav li').removeClass('active')
+    $('#overlaps .nav li').removeClass('active')
     li.addClass('active')
     id = li.attr('data-target')
-    $('#file_set #table, #file_set #venn').hide()
-    $('#file_set #'+id).show()
-
-toBinary = (n,x) -> ("00000" +  x.toString(2)).substr(-n)
-reverseStr = (s) -> s.split('').reverse().join('')
+    $('#overlaps #venn-table, #overlaps #venn').hide()
+    $('#overlaps #'+id).show()
 
 tick_or_cross = (x) -> "<i class='glyphicon glyphicon-#{if x=="1" then "ok" else "remove"}'></i>"
 
@@ -148,8 +148,6 @@ secondary_table = (forRows, k, set) ->
            )
 
 
-span = (clazz) -> "<span class='selectable #{clazz}'></span>"
-
 key_column = 'key'
 id_column = 'Feature'
 fdrCol = 'adj.P.Val'
@@ -171,8 +169,11 @@ class Data
         @ids = d3.keys(@data)
         @keys = d3.keys(@data[@ids[0]])
 
-    get_data_for: (key) ->
+    get_data_for_key: (key) ->
         @ids.map((id) => @data[id][key])
+
+    get_data_for_id: (id) ->
+        @data[id]
 
     num_fdr: (key) ->
         num = 0; up=0; down=0
@@ -245,6 +246,7 @@ class GeneTable
         ret
 
     _fc_div: (n) ->
+        get_pos_neg = (v) -> if (v >= 0) then "pos" else "neg"
         "<div class='#{get_pos_neg(n)}'>#{n.toFixed(2)}</div>"
 
     _columns: () ->
@@ -300,18 +302,23 @@ class SelectorTable
     elem = "#files"
     constructor: (@data) ->
         @gene_table = new GeneTable({elem:'#gene-table', elem_info: '#gene-table-info'})
-        for name in data.keys
+        @overlaps = new Overlaps(@data)
+        @_mk_selector()
+        @set_all_counts()
+        #update_selected()
+
+    _mk_selector: () ->
+        span = (clazz) -> "<span class='selectable #{clazz}'></span>"
+        for name in @data.keys
             do (name) =>
                 li = $("<li class='#{name}'><a class='file' href='#'>#{name}</a>"+
                        span("total")+span("up")+span("down"))
                 $('a',li).click(() => @selected(name))
                 $(elem).append(li)
         $('.selectable').click((el) => @_sel_span(el.target))
-        @set_all_counts()
-        #update_selected()
 
     selected: (name) ->
-        rows = @data.get_data_for(name)
+        rows = @data.get_data_for_key(name)
         @gene_table.set_data(rows)
         $('#gene-list-name').text("for '#{name}'")
 
@@ -332,7 +339,7 @@ class SelectorTable
         else
             $(item).siblings('span').removeClass('selected')
             $(item).addClass('selected')
-        update_selected()
+        @overlaps.update_selected()
         false
 
 

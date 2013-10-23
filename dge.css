@@ -20,7 +20,7 @@
     text-align: right;
     padding: 2px;
 }
-.total { background-color: #ddd;     text-align: right !important;}
+.total { background-color: #ddd; text-align: right !important;}
 .up    { background-color: #dfd; }
 .down  { background-color: #fdd; }
 
@@ -44,15 +44,15 @@ span.selected { border: 2px blue solid; padding: 0; }
 }
 
 
-#file_set #venn {
-  height: 280px;
+#overlaps #venn {
+  height: 400px;
   overflow: visible;
 }
 
-#file_set table {
+#overlaps #venn-table {
   margin-top: 100px;
 }
 
-#file_set td.ticks {
+#overlaps td.ticks {
   padding-right: 35px;
 }
