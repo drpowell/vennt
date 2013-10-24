@@ -9,6 +9,7 @@ csv_file     = null
 info_columns = null
 
 g_fdr_cutoff = 0.01
+g_fc_cutoff  = 0
 
 read_settings = () ->
     window.venn_settings ?= {}
@@ -18,6 +19,9 @@ read_settings = () ->
     logFCcol     = venn_settings.logFC_column || 'logFC'
     csv_file     = venn_settings.csv_file     || 'data.csv'
     info_columns = venn_settings.info_columns || [id_column]
+
+is_signif = (item) ->
+    item[fdrCol] < g_fdr_cutoff && Math.abs(item[logFCcol])>g_fc_cutoff
 
 setup_tabs = ->
     $('#overlaps .nav a').click (el) -> clickTab($(el.target).parent('li'))
@@ -44,17 +48,17 @@ class Overlaps
             res.push
                 name: name
                 typ: '' # 'Up/Down'
-                func: (row) -> row[fdrCol] < g_fdr_cutoff
+                func: (row) -> is_signif(row)
           else if $(sel).hasClass('up')
             res.push
                 name: name
                 typ: 'Up : '
-                func: (row) -> row[fdrCol] < g_fdr_cutoff && row[logFCcol]>=0
+                func: (row) -> is_signif(row) && row[logFCcol]>=0
           else if $(sel).hasClass('down')
             res.push
                 name: name
                 typ: 'Down : '
-                func: (row) -> row[fdrCol] < g_fdr_cutoff && row[logFCcol]<0
+                func: (row) -> is_signif(row) && row[logFCcol]<0
       res
 
     _forRows: (set, cb) ->
@@ -192,7 +196,7 @@ class Data
     num_fdr: (key) ->
         num = 0; up=0; down=0
         for id,d of @data
-            if d[key][fdrCol]<g_fdr_cutoff
+            if is_signif(d[key])
                 num+=1
                 if (d[key][logFCcol]>0)
                     up++
@@ -261,7 +265,7 @@ class GeneTable
     _meta_formatter: (item, ret) ->
         ret ?= {}
         ret.cssClasses ?= ''
-        ret.cssClasses += if item[fdrCol] > g_fdr_cutoff then 'nosig' else 'sig'
+        ret.cssClasses += if is_signif(item) then 'nosig' else 'sig'
         ret
 
     _get_formatter: (type, val) ->
@@ -401,13 +405,13 @@ class DGEVenn
         data = new Data(rows)
         @selector = new SelectorTable(data)
 
-        @_setup_fdr_slider()
+        @_setup_sliders()
 
-    _setup_fdr_slider: () ->
+    _setup_sliders: () ->
         fdr_field = "input.fdr-fld"
-
-        @slider = new Slider( "#fdrSlider", fdr_field, (v) => @set_fdr_cutoff(v))
-        @slider.set_slider(g_fdr_cutoff)
+        fdrStepValues = [0, 1e-5, 0.0001, 0.001, .01, .02, .03, .04, .05, 0.1, 1]
+        @fdr_slider = new Slider("#fdrSlider", fdr_field,fdrStepValues, (v) => @set_fdr_cutoff(v))
+        @fdr_slider.set_slider(g_fdr_cutoff)
 
         $(fdr_field).keyup((ev) =>
             el = ev.target
@@ -419,9 +423,29 @@ class DGEVenn
             @set_fdr_cutoff(v)
         )
 
+        fc_field = "input.fc-fld"
+        fcStepValues = [0, 1, 2, 3, 4]
+        @fc_slider = new Slider("#fcSlider", fc_field, fcStepValues, (v) => @set_fc_cutoff(v))
+        @fc_slider.set_slider(g_fc_cutoff)
+
+        $(fc_field).keyup((ev) =>
+            el = ev.target
+            v = Number($(el).val())
+            if (isNaN(v) || v<0)
+                $(el).addClass('error')
+            else
+                $(el).removeClass('error')
+            @set_fc_cutoff(v)
+        )
+
     set_fdr_cutoff: (v) ->
         g_fdr_cutoff = v
-        @slider.set_slider(v)
+        @fdr_slider.set_slider(v)
+        @selector.set_all_counts()
+
+    set_fc_cutoff: (v) ->
+        g_fc_cutoff = v
+        @fc_slider.set_slider(v)
         @selector.set_all_counts()
 
 setup_about_modal = () ->

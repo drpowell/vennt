@@ -65,6 +65,12 @@ span.selected { border: 2px blue solid; padding: 0; }
 
 input.fdr-fld { width: 70px; }
 div#fdrSlider { display: inline-block; width: 130px; margin: 0 5px; }
+.fdr strong   { display: inline-block; width: 120px; }
+
+input.fc-fld { width: 70px; }
+div#fcSlider { display: inline-block; width: 130px; margin: 0 5px; }
+.fc strong   { display: inline-block; width: 120px; }
+
 .error { background-color: #fbb; }
 
 
