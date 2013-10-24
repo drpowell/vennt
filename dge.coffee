@@ -265,7 +265,7 @@ class GeneTable
     _meta_formatter: (item, ret) ->
         ret ?= {}
         ret.cssClasses ?= ''
-        ret.cssClasses += if is_signif(item) then 'nosig' else 'sig'
+        ret.cssClasses += if is_signif(item) then 'sig' else 'nosig'
         ret
 
     _get_formatter: (type, val) ->
