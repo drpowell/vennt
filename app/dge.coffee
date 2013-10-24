@@ -1,5 +1,3 @@
-dge_venn_version = '0.2'
-
 window.venn_settings ?= {}
 key_column   = null
 id_column    = null
@@ -40,26 +38,26 @@ class Overlaps
     constructor: (@gene_table, @data) ->
 
     get_selected: () ->
-      sels = $('.selected')
-      res = []
-      for sel in sels
-          name = $(sel).parent('li').attr('class')
-          if $(sel).hasClass('total')
-            res.push
-                name: name
-                typ: '' # 'Up/Down'
-                func: (row) -> is_signif(row)
-          else if $(sel).hasClass('up')
-            res.push
-                name: name
-                typ: 'Up : '
-                func: (row) -> is_signif(row) && row[logFCcol]>=0
-          else if $(sel).hasClass('down')
-            res.push
-                name: name
-                typ: 'Down : '
-                func: (row) -> is_signif(row) && row[logFCcol]<0
-      res
+        sels = $('.selected')
+        res = []
+        for sel in sels
+            name = $(sel).parent('li').attr('class')
+            if $(sel).hasClass('total')
+              res.push
+                  name: name
+                  typ: '' # 'Up/Down'
+                  func: (row) -> is_signif(row)
+            else if $(sel).hasClass('up')
+              res.push
+                  name: name
+                  typ: 'Up : '
+                  func: (row) -> is_signif(row) && row[logFCcol]>=0
+            else if $(sel).hasClass('down')
+              res.push
+                  name: name
+                  typ: 'Down : '
+                  func: (row) -> is_signif(row) && row[logFCcol]<0
+        res
 
     _forRows: (set, cb) ->
         for id in @data.ids
