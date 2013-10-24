@@ -12,5 +12,5 @@ cp -r build/* dist/$ver
 
 cd dist
 for f in $ver/*; do
-  ln -sf $f .
+  cp -rf $f .
 done
