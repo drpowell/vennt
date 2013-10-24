@@ -1,5 +1,7 @@
+v0.3
   * Added a logFC filter to work with the fdr filter
   * Change to combined assets for js & css
+  * Use template for body.  Use github as CDN
 
 v0.2
   * Added a link to download the currently displayed table as CSV
