@@ -1,38 +1,32 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="venn.css">
-    <link rel="stylesheet" type="text/css" href="dge.css">
+    <link rel="stylesheet" type="text/css" href="css/venn.css">
+    <link rel="stylesheet" type="text/css" href="css/dge.css">
 
     <!-- Boostrap CSS -->
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- SlickGrid CSS -->
-    <link rel="stylesheet" href="lib/slick.grid.css" type="text/css"/>
+    <link rel="stylesheet" href="css/lib/slick.grid.css" type="text/css"/>
 
     <!-- jQuery -->
-    <script type="text/javascript" charset="utf8" src="lib/jquery-1.8.2.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css" />
 
     <!-- Bootstrap JS -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
-    <!-- SlickGrid -->
-    <script type="text/javascript" src="lib/jquery.event.drag-2.2.js"></script>
-    <script type="text/javascript" src="lib/slick.core.js"></script>
-    <script type="text/javascript" src="lib/slick.grid.js"></script>
-    <script type="text/javascript" src="lib/slick.dataview.js"></script>
-
-    <!-- D3 -->
-    <script src="lib/d3.v2.js"></script>
-
-    <script src="slider.js" type="text/javascript"></script>
-    <script src="venn.js" type="text/javascript"></script>
-    <script src="dge.js" type="text/javascript"></script>
+    <script type="text/javascript" src="main.js"></script>
   </head>
 
   <body>
+    <script type="text/javascript">
+      window.venn_settings = { info_columns: ['Feature', 'Associated Gene Name', 'Description'],
+                               csv_file: 'out.csv',
+                             };
+    </script>
 
-    <div id='loading'><img src='lib/images/ajax-loader.gif'></div>
+    <div id='loading'><img src='css/lib/images/ajax-loader.gif'></div>
 
     <div id="wrap">
       <!-- navbar -->
