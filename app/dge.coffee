@@ -1,3 +1,4 @@
+
 window.venn_settings ?= {}
 key_column   = null
 id_column    = null
@@ -19,7 +20,7 @@ read_settings = () ->
     info_columns = venn_settings.info_columns || [id_column]
 
 is_signif = (item) ->
-    item[fdrCol] < g_fdr_cutoff && Math.abs(item[logFCcol])>g_fc_cutoff
+    !(item[fdrCol] > g_fdr_cutoff || Math.abs(item[logFCcol])<g_fc_cutoff)
 
 setup_tabs = ->
     $('#overlaps .nav a').click (el) -> clickTab($(el.target).parent('li'))
@@ -392,14 +393,23 @@ class SelectorTable
 class DGEVenn
     constructor: () ->
         read_settings()
-        setup_tabs()
-        $("input.fdr-fld").value = g_fdr_cutoff
 
         d3.csv(csv_file, (rows) => @_data_ready(rows))
 
-    _data_ready: (rows) ->
+    _show_page: () ->
+        about = $(require("./templates/about.hbs")(dge_venn_version: dge_venn_version))
+        body = $(require("./templates/body.hbs")())
+        $('body').append(body)
+        $('#about-modal').replaceWith(about)
         $('#wrap > .container').show()
         $('#loading').hide()
+
+        # Now the page exists!  Do some configuration
+        setup_tabs()
+        $("input.fdr-fld").value = g_fdr_cutoff
+
+    _data_ready: (rows) ->
+        @_show_page()
         data = new Data(rows)
         @selector = new SelectorTable(data)
 
@@ -446,33 +456,4 @@ class DGEVenn
         @fc_slider.set_slider(v)
         @selector.set_all_counts()
 
-setup_about_modal = () ->
-    html = "<div id='about-modal' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-      <div class='modal-dialog'>
-        <div class='modal-content'>
-          <div class='modal-header'>
-            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button>
-            <h3 id='myModalLabel'>About DGE Venn Explorer</h3>
-          </div>
-          <div class='modal-body'>
-            <p>DGE Venn Explorer : Compare gene expression lists using a dynamic venn diagram</p>
-            <p>Version : #{dge_venn_version}  (See <a target='_blank' href='https://raw.github.com/drpowell/DGE-venn/master/Changelog.txt'>Changelog</a>)</p>
-            <p>Visit the <a href='http://drpowell.github.io/DGE-venn/'>DGE Venn Explorer project page</a>,
-               or the <a href='https://github.com/drpowell/DGE-venn'>source code on GitHub</a>
-            </p>
-            <div>Written by <a href='http://thunking.drp.id.au/'>David R. Powell</a></div>
-            <div class='supported-by'>
-              Supported by <a href='http://vicbioinformatics.com/'>Victorian Bioinformatics Consortium, Monash University</a>
-              and <a href='http://www.vlsci.org.au/lscc'>VLSCI\'s Life Sciences Computation Centre</a>
-            </div>
-          </div>
-          <div class='modal-footer'>
-            <button class='btn btn-primary' data-dismiss='modal' aria-hidden='true'>Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-`   </div><!-- /.modal -->
-    "
-    $('#about-modal').replaceWith(html)
-
-$(document).ready(() -> setup_about_modal(); new DGEVenn())
+$(document).ready(() -> new DGEVenn())

@@ -1,21 +1,10 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="css/venn.css">
-    <link rel="stylesheet" type="text/css" href="css/dge.css">
 
-    <!-- Boostrap CSS -->
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- SlickGrid CSS -->
-    <link rel="stylesheet" href="css/lib/slick.grid.css" type="text/css"/>
-
-    <!-- jQuery -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css" />
 
-    <!-- Bootstrap JS -->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-
+    <link rel="stylesheet" type="text/css" href="main.min.css">
     <script type="text/javascript" src="main.js"></script>
   </head>
 
@@ -27,63 +16,6 @@
     </script>
 
     <div id='loading'><img src='css/lib/images/ajax-loader.gif'></div>
-
-    <div id="wrap">
-      <!-- navbar -->
-      <div class="navbar navbar-default">
-        <div class="container">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="#">DGE Venn explorer</a>
-          </div>
-          <div class='navbar-text pull-right'>
-            <a class='navbar-link' href="#about-modal" data-toggle="modal">About</a>
-          </div>
-        </div>
-      </div>
-
-      <div class='container'>
-        <div class='row'>
-          <div class='col-md-4'>
-            <div class='options'>
-              <h2>DGE lists</h2>
-              <ul id='files' class='list-unstyled'></ul>
-            </div>
-   
-            <div class='options'>
-              <h3>Options</h3>
-              <div class='fdr'>
-                <strong>FDR threshold</strong>
-                <div id='fdrSlider'></div>
-                <input class="fdr-fld" type="text" value="0.01" />
-              </div>
-              <div class='fc'>
-                <strong>log FC threshold</strong>
-                <div id='fcSlider'></div>
-                <input class="fc-fld" type="text" value="0" />
-              </div>
-            </div>
-          </div>
-
-          <div id='overlaps' class='col-md-8 tabbable tabs-right'>
-            <ul class="nav nav-tabs">
-              <li data-target='venn-table'><a href="#">Table</a></li>
-              <li data-target='venn'><a href="#">Venn</a></li>
-            </ul>
-            <div id='venn-table' class='tab-content'></div>
-            <div id='venn' class='tab-content'></div>
-          </div>
-        </div>
-   
-        <h2>Gene List <span id='gene-list-name'></span></h2>
-        <div id='gene-list-desc'></div>
-        <a id='csv-download' href='#'>Download CSV</a>        <div id='gene-table-info'></div>
-        <div id='gene-table'></div>
-      </div> <!-- end container -->
-    </div> <!-- end wrap -->
-
-    <!-- About box Modal -->
-    <div id="about-modal"></div>
-
-</body>
+  </body>
 </html>
 
