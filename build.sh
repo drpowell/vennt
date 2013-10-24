@@ -1,9 +1,15 @@
 #!/bin/sh
 
+url='http://drpowell.github.io/DGE-venn/dist/'
+
+echo "Building.  Using URL $url"
 
 rm -rf build
 mkdir build
 
-cp index.html build
+cp -r css/images build
+
+sed -e "s|'\./|'$url|" index.html > build/index.html
+
 browserify -t coffeeify -t hbsfy app/main.coffee | uglifyjs > build/main.js
-cat css/dge.css css/venn.css css/lib/slick.grid.css | cleancss > build/main.min.css
+cat css/dge.css css/venn.css css/slick.grid.css | cleancss > build/main.min.css
