@@ -15,7 +15,7 @@
     npm install coffeeify       # Needs to be local?
 
     browserify -t coffeeify -t hbsfy app/main.coffee | uglifyjs > main.js
-    cat css/dge.css css/venn.css css/lib/slick.grid.css | cleancss > main.min.css
+    cat css/dge.css css/venn.css css/slick.grid.css | cleancss > main.min.css
 
 ### For development
 
