@@ -1,9 +1,5 @@
 #!/bin/sh
 
-url='http://drpowell.github.io/DGE-venn/dist/'
-
-echo "Building.  Using URL $url"
-
 rm -rf build
 mkdir build
 

@@ -2,3 +2,4 @@ main.js
 main.min.css
 node_modules/
 build/
+dist/
