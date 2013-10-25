@@ -1,7 +1,6 @@
-# DGE-venn
+# Vennt
 
-* Venn diagrams for DGE lists
-
+* Dynamic Venn diagrams for differential gene expression
 
 
 ## Development

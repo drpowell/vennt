@@ -397,7 +397,7 @@ class DGEVenn
         d3.csv(csv_file, (rows) => @_data_ready(rows))
 
     _show_page: () ->
-        about = $(require("./templates/about.hbs")(dge_venn_version: dge_venn_version))
+        about = $(require("./templates/about.hbs")(vennt_version: vennt_version))
         body = $(require("./templates/body.hbs")())
         $('body').append(body)
         $('#about-modal').replaceWith(about)
