@@ -3,3 +3,4 @@ main.min.css
 node_modules/
 build/
 dist/
+tmp/

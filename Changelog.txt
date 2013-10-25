@@ -1,3 +1,5 @@
+  * Use travisci to check build is at least working 
+
 v0.3
   * Added a logFC filter to work with the fdr filter
   * Change to combined assets for js & css

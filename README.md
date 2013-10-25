@@ -5,7 +5,7 @@
 
 ## Development
 
-### To build
+### To build 
 
     npm install -g browserify
     npm install -g clean-css
@@ -13,13 +13,14 @@
     npm install handlebars-runtime
     npm install coffeeify       # Needs to be local?
 
-    browserify -t coffeeify -t hbsfy app/main.coffee | uglifyjs > main.js
-    cat css/dge.css css/venn.css css/slick.grid.css | cleancss > main.min.css
+    # Builds files index.html, main.js, main.min.css into build/
+    ./build.sh
 
 ### For development
+This will watch the js & coffeescript files and rebuild `main.js` as needed.  You'll still need to build the css using `build.sh`.
 
     npm install -g watchify
 
-    watchify -t coffeeify --debug app/main.coffee -o main.js -v
+    watchify -t coffeeify -t hbsfy --debug app/main.coffee -o build/main.js -v
 
 
