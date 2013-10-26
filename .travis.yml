@@ -1,0 +1,8 @@
+before_install:
+  - npm install coffee-script clean-css browserify hbsfy handlebars-runtime coffeeify uglify-js
+
+before_script:
+
+script:
+  - ./build.sh
+
