@@ -173,6 +173,8 @@ class Overlaps
 class Data
     constructor: (rows) ->
         @data = {}
+
+        ids = {}
         for r in rows
             d = (@data[r[id_column]] ?= {})
             r.id ?= r[id_column]   # Needed by slickgrid (better be unique!)
@@ -181,7 +183,14 @@ class Data
             for num_col in [fdrCol, logFCcol]
                 r[num_col]=+r[num_col] if r[num_col]
 
-            d[r[key_column]] = r
+            key = r[key_column]
+            d[key] = r
+
+            ids[key] ?= {}
+            if ids[key][r.id]
+                log_error("Duplicate ID for #{key}, id=#{r.id}")
+            ids[key][r.id]=1
+
 
         @ids = d3.keys(@data)
         @keys = d3.keys(@data[@ids[0]])
