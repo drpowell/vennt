@@ -15,6 +15,7 @@ require('./lib/slick.dataview.js')
 require("./lib/d3.v2.js")
 
 # Ours
+require("./utils.coffee")
 require("./slider.coffee")
 require("./venn.coffee")
 require("./dge.coffee")

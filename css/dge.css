@@ -34,6 +34,29 @@ a#csv-download { font-size: 9pt; float: right; margin: -7px 30px 0 0; }
 }
 .slick-header-column { height: auto !important; }
 
+/* Log list *******************************************************/
+
+.log-list {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 60px;
+
+    border: thin solid black;
+    background: #ddd;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 99;
+    max-height: 600px;
+    overflow: scroll;
+}
+
+.log-list .error { color: red; }
+.log-list .warn { color: yellow; }
+.log-list .info { color: blue; }
+
+.log-link { opacity: 0.4; }
+
 /* List selector table ********************************************/
 
 .file { width: 185px; display: inline-block; }

@@ -1,4 +1,5 @@
   * Use travisci to check build is at least working 
+  * Add a "log messages" panel.  Just for errors for now
 
 v0.3
   * Added a logFC filter to work with the fdr filter

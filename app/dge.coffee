@@ -407,13 +407,19 @@ class DGEVenn
         # Now the page exists!  Do some configuration
         setup_tabs()
         $("input.fdr-fld").value = g_fdr_cutoff
+        $("a.log-link").click(() -> $('.log-list').toggle())
 
     _data_ready: (rows) ->
         @_show_page()
+        if !rows
+            log_error("Unable to download csv file : '#{csv_file}'")
+            return
+        log_info("Downloaded data : #{rows.length} rows")
         data = new Data(rows)
         @selector = new SelectorTable(data)
 
         @_setup_sliders()
+        log_info("Ready!")
 
     _setup_sliders: () ->
         fdr_field = "input.fdr-fld"
