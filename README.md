@@ -2,6 +2,18 @@
 
 * Dynamic Venn diagrams for differential gene expression
 
+## Example Screenshot
+
+![Vennt screenshot](http://drpowell.github.io/vennt/images/screenshot-1.png)
+
+## To use
+
+To use, generate a single CSV file with all your gene lists.  Each row of the CSV should contain information about a gene including the `log fold change`, and the `adjust p-value`.  Use a single column to specify the gene-list (see the example below).  Each gene must have a unique identifier, which is used to find the corresponding genes in the different gene lists.
+
+Download this <a href='http://drpowell.github.io/vennt/example/template.html'>html file</a>.  Then, just put it and your CSV file on a web-server.  (For local testing you can use `python -mSimpleHTTPServer`.)
+
+You may need to specify some configuration if the defaults do not suffice, for example column names.  These are configured in the html file.
+
 #### Available settings
 
 Set these in `window.venn_settings` in your html file.
@@ -19,7 +31,9 @@ For example, consider this is your csv file, which is called `data.csv`:
     WT vs MT1,ENSG00000083520,DIS3 mitotic control homolog (S. cerevisiae),DIS3,-2.4,4.8e-10
     WT vs MT1,ENSG00000025156,heat shock transcription factor 2,HSF2,-0.89,6.4e-05
     WT vs MT1,ENSG00000103042,"solute carrier family 38, member 7",SLC38A7,1.5,6.4e-05
-    WT vs MT1,ENSG00000153395,lysophosphatidylcholine acyltransferase 1,LPCAT1,-0.55,6.4e-05
+    WT vs MT2,ENSG00000083520,DIS3 mitotic control homolog (S. cerevisiae),DIS3,-2.4,4.8e-10
+    WT vs MT2,ENSG00000025156,heat shock transcription factor 2,HSF2,-0.89,6.4e-05
+    WT vs MT2,ENSG00000103042,"solute carrier family 38, member 7",SLC38A7,1.5,6.4e-05
 
 You'd specify this in your html file:
 
@@ -33,6 +47,7 @@ You'd specify this in your html file:
 ## Development
 
 ### To build 
+For building from sources, you will need nodejs and the following modules.
 
     npm install -g browserify
     npm install -g clean-css
