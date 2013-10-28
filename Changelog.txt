@@ -1,3 +1,4 @@
+v0.4
   * Use travisci to check build is at least working 
   * Add a "log messages" panel.  Just for errors for now
 
