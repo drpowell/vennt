@@ -1,7 +1,5 @@
 .screenshot {
-  position: absolute;
-  top: 20px;
-  right: 50px;
+  float: right;
   width: 350px;
 
   border: none;
