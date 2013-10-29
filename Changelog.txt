@@ -1,6 +1,7 @@
 v0.4
   * Use travisci to check build is at least working 
   * Add a "log messages" panel.  Just for errors for now
+  * Add support for embeded CSV files (see csv_data setting)
 
 v0.3
   * Added a logFC filter to work with the fdr filter
