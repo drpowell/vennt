@@ -1,4 +1,5 @@
-  * Add tour (using bootstrap-tour)
+v0.5
+  * Add a tour of the features (using bootstrap-tour)
   * Add embed.py for creating a standalone html file
 
 v0.4

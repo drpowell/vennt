@@ -7,6 +7,7 @@ logFCcol     = null
 info_columns = null
 csv_file     = null
 csv_data     = null
+show_tour    = null
 
 g_fdr_cutoff = 0.01
 g_fc_cutoff  = 0
@@ -20,6 +21,7 @@ read_settings = () ->
     info_columns = venn_settings.info_columns || [id_column]
     csv_file     = venn_settings.csv_file     || 'data.csv'
     csv_data     = venn_settings.csv_data
+    show_tour    = if venn_settings.show_tour? then venn_settings.show_tour else true
 
 is_signif = (item) ->
     !(item[fdrCol] > g_fdr_cutoff || Math.abs(item[logFCcol])<g_fc_cutoff)
@@ -425,6 +427,8 @@ class DGEVenn
         $("input.fdr-fld").value = g_fdr_cutoff
         $("a.log-link").click(() -> $('.log-list').toggle())
 
+        setup_tour(show_tour)
+
     _data_ready: (rows) ->
         @_show_page()
         if !rows
@@ -478,4 +482,4 @@ class DGEVenn
         @fc_slider.set_slider(v)
         @selector.set_all_counts()
 
-$(document).ready(() -> new DGEVenn())
+$(document).ready(() -> new DGEVenn() )
