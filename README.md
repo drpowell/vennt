@@ -24,6 +24,7 @@ Set these in `window.venn_settings` in your html file.
 * `fdr_column` - (default 'adj.P.Val') - Name of the column containing the adjusted p-value.  (This is often a false-discovery rate.)
 * `logFC_column` - (default 'logFC') - Name of the column containing the log-fold-change for each gene-list.
 * `info_columns` - (default '[Feature]') - An array of column names to display to the user.  This should contain useful information you want the user to see - such as a gene-id, perhaps common gene-name, or possibly a brief description.
+* `csv_data` - (default 'null') - This can be used to directly embed a CSV file rather than requesting via ajax.  Note, setting this parameter will cause any `csv_file` to be ignored
 
 For example, consider this is your csv file, which is called `data.csv`:
 

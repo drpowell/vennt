@@ -4,8 +4,9 @@ key_column   = null
 id_column    = null
 fdrCol       = null
 logFCcol     = null
-csv_file     = null
 info_columns = null
+csv_file     = null
+csv_data     = null
 
 g_fdr_cutoff = 0.01
 g_fc_cutoff  = 0
@@ -16,8 +17,9 @@ read_settings = () ->
     id_column    = venn_settings.id_column    || 'Feature'
     fdrCol       = venn_settings.fdr_column   || 'adj.P.Val'
     logFCcol     = venn_settings.logFC_column || 'logFC'
-    csv_file     = venn_settings.csv_file     || 'data.csv'
     info_columns = venn_settings.info_columns || [id_column]
+    csv_file     = venn_settings.csv_file     || 'data.csv'
+    csv_data     = venn_settings.csv_data
 
 is_signif = (item) ->
     !(item[fdrCol] > g_fdr_cutoff || Math.abs(item[logFCcol])<g_fc_cutoff)
@@ -403,7 +405,12 @@ class DGEVenn
     constructor: () ->
         read_settings()
 
-        d3.csv(csv_file, (rows) => @_data_ready(rows))
+        if csv_data
+            # csv data is already in document
+            @_data_ready(d3.csv.parse(venn_settings.csv_data))
+        else
+            # Fetch csv data using ajax
+            d3.csv(csv_file, (rows) => @_data_ready(rows))
 
     _show_page: () ->
         about = $(require("./templates/about.hbs")(vennt_version: vennt_version))
