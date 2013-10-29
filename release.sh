@@ -5,9 +5,6 @@ set -e
 
 url='http://drpowell.github.io/vennt/dist/'
 
-echo "Minifying..."
-./build.sh
-
 ver=$(grep ver app/version.coffee| sed -e 's/^.* = //')
 ver="${ver//\'}"
 
@@ -18,7 +15,10 @@ if [ -z "$ver" ]; then
   exit 1
 fi
 
-echo "Changing to repo to gh-pages"
+echo "Minifying..."
+./build.sh
+
+echo "Changing repo to gh-pages"
 git checkout gh-pages
 
 echo "Copying to dist/$ver"
@@ -27,6 +27,7 @@ mkdir -p dist/$ver
 cp -r build/* dist/$ver
 sed -e "s|'\./|'$url|" build/index.html > dist/$ver/index.html
 
+sed -e "/HTML-HERE/r dist/$ver/index.html" -e '/HTML-HERE/d' build/embed.py > dist/$ver/vennt.py
 
 (  cd dist
    for f in $ver/*; do
