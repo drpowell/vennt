@@ -19,12 +19,13 @@ You may need to specify some configuration if the defaults do not suffice, for e
 Set these in `window.venn_settings` in your html file.
 
 * `csv_file`  - (default 'data.csv') Name of the CSV file containing the data to load.  Must be on the same origin as the html file due to javascript's [Same-origin policy](http://en.wikipedia.org/wiki/Same-origin_policy) 
+* `csv_data` - (default 'null') - This can be used to directly embed a CSV file rather than requesting via ajax.  Note, setting this parameter will cause any `csv_file` to be ignored
 * `key_column` - (default 'key') Name of the column specifying the gene-list.
 * `id_column` - (default 'Feature') Name of the column specifying a unique identifier for the gene.  This must be unique within each gene-list, because it is used to match up the genes between the different gene-lists.
 * `fdr_column` - (default 'adj.P.Val') - Name of the column containing the adjusted p-value.  (This is often a false-discovery rate.)
 * `logFC_column` - (default 'logFC') - Name of the column containing the log-fold-change for each gene-list.
 * `info_columns` - (default '[Feature]') - An array of column names to display to the user.  This should contain useful information you want the user to see - such as a gene-id, perhaps common gene-name, or possibly a brief description.
-* `csv_data` - (default 'null') - This can be used to directly embed a CSV file rather than requesting via ajax.  Note, setting this parameter will cause any `csv_file` to be ignored
+* `show_tour` - (default true) - Show the Venn tour on page load (if not shown before)
 
 For example, consider this is your csv file, which is called `data.csv`:
 
@@ -65,5 +66,5 @@ This will watch the js & coffeescript files and rebuild `main.js` as needed.  Yo
     npm install -g watchify
 
     watchify -t coffeeify -t hbsfy --debug app/main.coffee -o build/main.js -v
-
+    (cd build ; python -mSimpleHTTPServer)
 
