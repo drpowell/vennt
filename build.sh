@@ -9,7 +9,7 @@ cp -r css/images build
 cp index.html build
 
 echo "Combining css and minifying..."
-cat css/dge.css css/venn.css css/slick.grid.css | cleancss > build/main.min.css
+cat css/bootstrap-tour.min.css css/dge.css css/venn.css css/slick.grid.css | cleancss > build/main.min.css
 
 echo "Compiling CoffeeScript and bundling all js..."
 browserify -t coffeeify -t hbsfy app/main.coffee > build/main.big.js 
