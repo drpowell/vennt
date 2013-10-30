@@ -17,6 +17,7 @@ log_msg = (msg,rest) ->
 
     $('.log-list').append("<pre class='#{msg.toLowerCase()}'>#{msg}: #{args}")
     if msg=='ERROR'
-        $('.log-link').addClass('error')
+        $('.log-link').removeClass('btn-link')
+        $('.log-link').addClass('btn-danger')
     if msg=='ERROR' || msg=='WARN'
         $('.log-link').css('opacity','1')

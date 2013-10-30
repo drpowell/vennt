@@ -1,6 +1,8 @@
 v0.5
   * Add a tour of the features (using bootstrap-tour)
   * Add embed.py for creating a standalone html file
+  * Add error checking for missing columns in CSV
+  * Add error checking that numeric columns are numeric!
 
 v0.4
   * Use travisci to check build is at least working 

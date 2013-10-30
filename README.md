@@ -1,6 +1,8 @@
 # Vennt
 
-* Dynamic Venn diagrams for differential gene expression
+* Dynamic Venn diagrams for exploring lists of differential expressed genes
+
+Try a [Live Demo](http://drpowell.github.io/vennt/example/dge-example.html)
 
 ## Example Screenshot
 
@@ -8,15 +10,26 @@
 
 ## To use
 
-To use, generate a single CSV file with all your gene lists.  Each row of the CSV should contain information about a gene including the `log fold change`, and the `adjust p-value`.  Use a single column to specify the gene-list (see the example below).  Each gene must have a unique identifier, which is used to find the corresponding genes in the different gene lists.
+### As a single HTML file
+Generate a single CSV file with all your gene lists.  Each row of the CSV should contain information about a gene including the `log fold change`, and the `adjust p-value`.  Use a single column to specify the gene-list (see the example below).  Each gene must have a unique identifier, which is used to find the corresponding genes in the different gene lists.
 
-Download this <a href='http://drpowell.github.io/vennt/example/template.html'>html file</a>.  Then, just put it and your CSV file on a web-server.  (For local testing you can use `python -mSimpleHTTPServer`.)
+Download this python script <a href='http://drpowell.github.io/vennt/dist/vennt.py'>vennt.py</a> (requires python >=2.7).  Then, if your CSV column names match the defaults, simply run it as follows:
+
+    python vennt.py gene-lists.csv > my-vennt.html
+
+You may specify alternative column names, see `python vennt.py -h` for help.  And read the settings list below for more information on the columns.
+
+### With the CSV file from a webserver
+
+Creating a single HTML file with all your gene lists embedded may be a problem due to the size of the resulting HTML file.  In that situation, you can server the gene-list CSV file from a web-server.  Firstly, create your CSV as described above.
+
+Download this <a href='http://drpowell.github.io/vennt/example/template.html'>html file</a>.  Then, put it and your CSV file on a web-server.  (For local testing you can use `python -mSimpleHTTPServer`.)
 
 You may need to specify some configuration if the defaults do not suffice, for example column names.  These are configured in the html file.
 
 #### Available settings
 
-Set these in `window.venn_settings` in your html file.
+Set these in `window.venn_settings` in your html file (or using the options to vennt.py).
 
 * `csv_file`  - (default 'data.csv') Name of the CSV file containing the data to load.  Must be on the same origin as the html file due to javascript's [Same-origin policy](http://en.wikipedia.org/wiki/Same-origin_policy) 
 * `csv_data` - (default 'null') - This can be used to directly embed a CSV file rather than requesting via ajax.  Note, setting this parameter will cause any `csv_file` to be ignored
@@ -37,7 +50,7 @@ For example, consider this is your csv file, which is called `data.csv`:
     WT vs MT2,ENSG00000025156,heat shock transcription factor 2,HSF2,-0.89,6.4e-05
     WT vs MT2,ENSG00000103042,"solute carrier family 38, member 7",SLC38A7,1.5,6.4e-05
 
-You'd specify this in your html file:
+You would specify this in your html file:
 
     window.venn_settings = { csv_file: 'data.csv',
                              key_column: 'gene-list',
@@ -45,6 +58,12 @@ You'd specify this in your html file:
                              info_columns: ['id', 'Description', 'Gene Name']
                            }
 
+or using `vennt.py`
+
+    python vennt.py data.csv --key gene-list --id id --info id Description 'Gene Name'
+
+## Contributing ##
+Feel free to contribute with pull requests, bug reports or enhancement suggestions.
 
 ## Development
 
@@ -68,3 +87,5 @@ This will watch the js & coffeescript files and rebuild `main.js` as needed.  Yo
     watchify -t coffeeify -t hbsfy --debug app/main.coffee -o build/main.js -v
     (cd build ; python -mSimpleHTTPServer)
 
+## License ##
+Vennt is released under the GPL v3 (or later) license, see <a href='http://github.com/drpowell/vennt/blob/master/COPYING.txt'>COPYING.txt</a>
