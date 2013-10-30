@@ -38,6 +38,8 @@ clickTab = (li) ->
     $('#overlaps #venn-table, #overlaps #venn').hide()
     $('#overlaps #'+id).show()
 
+is_number = (n) ->
+  !isNaN(parseFloat(n)) && isFinite(n)
 
 class Overlaps
     constructor: (@gene_table, @data) ->
@@ -174,24 +176,46 @@ class Overlaps
 
         @gene_table.set_data(rows, cols)
 
+class LimitMsg
+    constructor: () ->
+        @count = {}
+        @max = 10
+    more: (tag) ->
+        (!@count[tag]?) || (@count[tag]<@max)
+    add: (tag) ->
+        @count[tag] ||= 0
+        @count[tag] += 1
+    check_and_add: (tag) ->
+        m = @more(tag)
+        @add(tag)
+        m
+
 class Data
     constructor: (rows) ->
         @data = {}
 
+        limit_msg = new LimitMsg()
         ids = {}
+        defined_columns = [key_column,id_column,fdrCol,logFCcol].concat(info_columns)
         for r in rows
+            for c in defined_columns
+                if !r[c]? && limit_msg.check_and_add(c)
+                    log_error("Missing data for column : #{c}")
+
             d = (@data[r[id_column]] ?= {})
             r.id ?= r[id_column]   # Needed by slickgrid (better be unique!)
 
             # Make number columns actual numbers
             for num_col in [fdrCol, logFCcol]
-                r[num_col]=+r[num_col] if r[num_col]
+                if !is_number(r[num_col])
+                    log_error("Not numeric '#{r[num_col]}' for row : #{r}") if limit_msg.check_and_add(num_col)
+                r[num_col]=parseFloat(r[num_col])
 
             key = r[key_column]
             d[key] = r
 
             ids[key] ?= {}
-            if ids[key][r.id]
+            if ids[key][r.id] && limit_msg.check_and_add('duplicate')
                 log_error("Duplicate ID for #{key}, id=#{r.id}")
             ids[key][r.id]=1
 
