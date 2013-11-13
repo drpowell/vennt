@@ -1,5 +1,6 @@
 window._gaq = window._gaq || [];
 window._gaq.push(['drp._setAccount', 'UA-45207067-1']);
+window._gaq.push(['drp._setCustomVar',1,'widget','vennt']);
 window._gaq.push(['drp._trackPageview']);
 
 (function() {
