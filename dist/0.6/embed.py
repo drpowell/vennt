@@ -8,25 +8,7 @@ import sys
 
 def embed(csv, args):
     html="""
-<html>
-  <head>
-
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css" />
-
-    <link rel="stylesheet" type="text/css" href='http://drpowell.github.io/vennt/dist/main.min.css'>
-    <script type="text/javascript" src='http://drpowell.github.io/vennt/dist/main.js'></script>
-  </head>
-
-  <body>
-    <script type="text/javascript">
-      window.venn_settings = { };
-    </script>
-
-    <div id='loading'><img src='http://drpowell.github.io/vennt/dist/images/ajax-loader.gif'></div>
-  </body>
-</html>
-
+           HTML-HERE
          """
     enc = json.dumps(csv)
     settings = ("window.venn_settings = {key_column: %s, id_column: %s, fdr_column: %s,"
