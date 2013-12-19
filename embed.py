@@ -15,7 +15,7 @@ def embed(csv, args):
                 "logFC_column: %s, info_columns: %s, csv_data: data};")%(
                   json.dumps(args.key), json.dumps(args.id), json.dumps(args.fdr),
                   json.dumps(args.logFC), json.dumps(args.info))
-    s = html.replace('window.venn_settings = { };', "var data=%s;\n\n%s"%(enc,settings), 1)
+    s = html.replace('window.venn_settings = { };', "%s\n\nvar data=%s;"%(settings,enc), 1)
     return s
 
 
