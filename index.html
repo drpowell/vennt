@@ -65,7 +65,9 @@ WT vs MT2,ENSG00000103042,"solute carrier family 38, member 7",SLC38A7,1.5,6.4e-
         <p>Download this python script <a href='http://drpowell.github.io/vennt/dist/vennt.py'>vennt.py</a> (requires python >=2.7).  Then, if your CSV column names match the defaults, simply run it as follows:</p>
         <pre>python vennt.py gene-lists.csv &gt; my-vennt.html</pre>
 
-        <p>You may need to configure the column names used in your CSV file.  This is done using arguments to <tt>vennt.py</tt> (read the command line help).
+        <p>You may need to configure the column names used in your CSV file.  This is done using arguments to <tt>vennt.py</tt> (read the command line help).</p>
+
+        <p>It is also possible to use separate CSV files for your gene lists.  Each CSV file is expected to be in the same format with columns in the same order.  The 'key' column is generated for you using the names of the files you specify.  To use separate CSV files simply specfiy them on the command line to <tt>vennt.py</tt>.</p>
 
         <h3>Separate HTML and CSV file</h3>
         <p>As an alternative to embedding the CSV file, you can have it served from a web server.  Simply download this <a href='example/template.html'>html (right-click 'Save As')</a>, then put it and your CSV file on a webserver.</p>
