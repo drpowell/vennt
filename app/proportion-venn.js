@@ -1,3 +1,9 @@
+/*
+  This was written by https://github.com/ThomasCabrol
+  under the MIT license
+  and copied into this repo from  https://github.com/ThomasCabrol/venn.js
+*/
+
 (function(venn) {
     "use strict";
     /** given a list of set objects, and their corresponding overlaps.
