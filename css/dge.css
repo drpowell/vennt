@@ -98,6 +98,8 @@ input.fc-fld { width: 70px; }
 div#fcSlider { display: inline-block; width: 130px; margin: 0 5px; }
 .fc strong   { display: inline-block; width: 120px; }
 
+.proportional { margin-top: 20px; }
+
 .error { background-color: #fbb; }
 
 

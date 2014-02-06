@@ -43,6 +43,7 @@ is_number = (n) ->
 
 class Overlaps
     constructor: (@gene_table, @data) ->
+        @proportional = false
 
     get_selected: () ->
         sels = $('.selected')
@@ -66,6 +67,15 @@ class Overlaps
                   func: (row) -> is_signif(row) && row[logFCcol]<0
         res
 
+    proportional_venn: (enabled) ->
+        @_reset_venn()
+        @proportional = enabled
+        @update_selected()
+
+    _reset_venn: () ->
+        @last_names = null
+        $('#overlaps svg').remove()
+
     _forRows: (set, cb) ->
         for id in @data.ids
             rowSet = @data.get_data_for_id(id)
@@ -81,10 +91,15 @@ class Overlaps
         reverseStr = (s) -> s.split('').reverse().join('')
         reverseStr(toBinary(size,i))
 
+    _int_to_list: (size, i) ->
+        s = @_int_to_key(size, i)
+        res=[]
+        for j in [0..s.length-1]
+            res.push(j) if s[j]=='1'
+        res
+
     _tick_or_cross: (x) ->
         "<i class='glyphicon glyphicon-#{if x then 'ok' else 'remove'}'></i>"
-
-
 
     _mk_venn_table: (set,counts) ->
         table = $('<table>')
@@ -109,6 +124,12 @@ class Overlaps
         $('#overlaps #venn-table').append(table)
 
     _mk_venn_diagram: (set, counts) ->
+        if @proportional
+            @_mk_venn_diagram_proportional(set, counts)
+        else
+            @_mk_venn_diagram_fixed(set, counts)
+
+    _mk_venn_diagram_fixed: (set, counts) ->
         # Draw venn diagram
         $('#overlaps svg').remove()
         if set.length<=4
@@ -127,6 +148,40 @@ class Overlaps
                     #venn[1<<i]['lblclick'] = () -> console.log(s['name'])
             draw_venn(n, '#overlaps #venn', venn)
 
+    _mk_venn_diagram_proportional: (set, counts) ->
+        # Draw an area proportional venn diagram
+        n = set.length
+        d = {}
+
+        sets = []
+        overlaps = []
+        z = {}
+        for i in [1 .. Math.pow(2,set.length)-1]
+            do (i) =>
+                str = @_int_to_key(n,i)
+                lst = @_int_to_list(n,i)
+                if lst.length>1
+                    for j in lst
+                        for k in lst
+                            if j<k
+                                s = "#{j},#{k}"
+                                z[s] ||= {sets: [j,k], size: 0}
+                                z[s].size += counts[str] || 0
+                for j in lst
+                    sets[j] ||= {label: set[j]['typ']+set[j]['name'], size: 0 }
+                    sets[j].size += counts[str] || 0
+                    #console.log lst,j,sets[j].size
+
+        overlaps = d3.values(z)
+        sets = venn.venn(sets, overlaps)
+        names = set.map((s) -> s.name)
+        if "#{names}" is "#{@last_names}"     # Poor mans array compare
+            venn.updateD3Diagram(d3.select("#overlaps #venn"), sets)
+        else
+            $('#overlaps svg').remove()
+            venn.drawD3Diagram(d3.select("#overlaps #venn"), sets, 750, 400)
+        @last_names = names
+
     # Handle the selected counts.  Generate the venn table and diagram
     update_selected: () ->
         set = @get_selected()
@@ -141,11 +196,11 @@ class Overlaps
         @_mk_venn_table(set, counts)
         @_mk_venn_diagram(set, counts)
 
-        $('#overlaps li[data-target=venn]').toggleClass('disabled', set.length>4)
+        #$('#overlaps li[data-target=venn]').toggleClass('disabled', set.length>4)
 
         # Return to 'venn-table' if venn is disabled
-        if $('#overlaps li[data-target=venn]').hasClass("disabled")
-            clickTab($('#overlaps li[data-target=venn-table]'))
+        #if $('#overlaps li[data-target=venn]').hasClass("disabled")
+        #    clickTab($('#overlaps li[data-target=venn-table]'))
 
     _secondary_table: (k, set) ->
         rows = []
@@ -407,6 +462,9 @@ class SelectorTable
                 $(elem).append(li)
         $('.selectable').click((el) => @_sel_span(el.target))
 
+    proportional_venn: (enable) ->
+        @overlaps.proportional_venn(enable)
+
     selected: (name) ->
         rows = @data.get_data_for_key(name)
 
@@ -474,6 +532,8 @@ class DGEVenn
         @selector = new SelectorTable(data)
 
         @_setup_sliders()
+        $(".proportional input").change((e) => @selector.proportional_venn(e.target.checked))
+
         log_info("Ready!")
 
     _setup_sliders: () ->

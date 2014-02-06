@@ -23,3 +23,5 @@ require("./tour.coffee")
 require("./dge.coffee")
 require("./version.coffee")
 require("./analytics.js")
+
+require('./proportion-venn.js')
