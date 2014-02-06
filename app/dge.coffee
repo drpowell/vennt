@@ -237,18 +237,19 @@ class LimitMsg
 
 class Data
     constructor: (rows) ->
-        @data = {}
+        @data = {}           # All genes, indexed gene ID column, then by condition KEY column
 
         limit_msg = new LimitMsg()
         ids = {}
         defined_columns = [key_column,id_column,fdrCol,logFCcol].concat(info_columns)
+        all_keys = {}
         for r in rows
             for c in defined_columns
                 if !r[c]? && limit_msg.check_and_add(c)
                     log_error("Missing data for column : #{c}")
 
             d = (@data[r[id_column]] ?= {})
-            r.id ?= r[id_column]   # Needed by slickgrid (better be unique!)
+            r.id ?= r[id_column]   # Needed by slickgrid
 
             # Make number columns actual numbers
             for num_col in [fdrCol, logFCcol]
@@ -257,6 +258,7 @@ class Data
                 r[num_col]=parseFloat(r[num_col])
 
             key = r[key_column]
+            all_keys[key] = 1
             d[key] = r
 
             ids[key] ?= {}
@@ -264,6 +266,15 @@ class Data
                 log_error("Duplicate ID for #{key}, id=#{r.id}")
             ids[key][r.id]=1
 
+        # Add missing any rows
+        for id, d of @data
+            for key,dummy of all_keys
+                if !d[key]?
+                    d[key] = {id: id}
+                    d[key][fdrCol] = 1.0
+                    d[key][logFCcol] = NaN
+                    if limit_msg.check_and_add('missing')
+                        log_error("Missing ID for #{key}, id=#{id}")
 
         @ids = d3.keys(@data)
         @keys = d3.keys(@data[@ids[0]])
