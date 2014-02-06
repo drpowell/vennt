@@ -1,3 +1,9 @@
+v0.7
+  * Add experimental option for "proportional" venn diagram
+
+v0.6
+  * Make vennt.py able to use multiple CSV files
+
 v0.5
   * Add a tour of the features (using bootstrap-tour)
   * Add embed.py for creating a standalone html file
