@@ -1,3 +1,7 @@
+v0.8.1
+  * Allow text selection in the gene table
+  * Display message when we can't draw a venn diagram
+
 v0.8
   * Add special 'cuffdiff' option to embed.py
 
