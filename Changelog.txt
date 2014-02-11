@@ -1,3 +1,6 @@
+v0.8
+  * Add special 'cuffdiff' option to embed.py
+
 v0.7
   * Add experimental option for "proportional" venn diagram
 
