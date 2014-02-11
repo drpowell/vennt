@@ -6,6 +6,8 @@ import re
 import sys,os
 import csv, StringIO
 
+bigFC = 100
+
 def error(message):
     sys.stderr.write("Error: %s\n" % message)
     sys.exit(1)
@@ -47,7 +49,13 @@ def cuffdiff_process(f):
         cw.writerow(headers + ['key'])
         idx1 = headers.index("sample_1")
         idx2 = headers.index("sample_2")
+        fcIdx = headers.index("log2(fold_change)")
         for r in reader:
+            # Replace an infinite fold-change with something vennt can handle
+            if r[fcIdx]=='inf':
+                r[fcIdx]=bigFC
+            if r[fcIdx]=='-inf':
+                r[fcIdx]=-bigFC
             k = r[idx1] + '-' + r[idx2]
             cw.writerow(r + [k])
 
