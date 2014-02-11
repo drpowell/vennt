@@ -196,11 +196,8 @@ class Overlaps
         @_mk_venn_table(set, counts)
         @_mk_venn_diagram(set, counts)
 
-        #$('#overlaps li[data-target=venn]').toggleClass('disabled', set.length>4)
-
-        # Return to 'venn-table' if venn is disabled
-        #if $('#overlaps li[data-target=venn]').hasClass("disabled")
-        #    clickTab($('#overlaps li[data-target=venn-table]'))
+        # The non-proportional diagram can only do up to 4 classes
+        $('#overlaps #venn #not-supported').toggle(!@proportional && set.length>4)
 
     _secondary_table: (k, set) ->
         rows = []
