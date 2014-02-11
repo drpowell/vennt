@@ -4,7 +4,11 @@ import argparse
 import json
 import re
 import sys,os
+import csv, StringIO
 
+def error(message):
+    sys.stderr.write("Error: %s\n" % message)
+    sys.exit(1)
 
 def embed(csv, args):
     html="""
@@ -18,7 +22,36 @@ def embed(csv, args):
     s = html.replace('window.venn_settings = { };', "var data=%s;\n\n%s"%(enc,settings), 1)
     return s
 
+def combine_csv(files,key):
+    data = []
+    sys.stderr.write("Using a separate CSV files\n")
+    for f in files:
+        sys.stderr.write("  Reading : %s\n"%f)
+        d = open(f).read()
+        # Separate header (and keep if it is the first)
+        hdr, d = d.split("\n",1)
+        if len(data)==0:
+            data.append('"%s",'%(key)+hdr+"\n")
+        d = re.sub(r'^(.{2})',r'"%s",\1'%os.path.splitext(os.path.basename(f))[0], d, 0, re.MULTILINE)   # Add a key column to all rows
+        data.append(d)
 
+    return ''.join(data)
+
+def cuffdiff_process(f):
+    with open(f, 'r') as csvfile:
+        reader = csv.reader(csvfile, delimiter="\t")
+        si = StringIO.StringIO()
+        cw = csv.writer(si, delimiter=",")
+
+        headers = reader.next()
+        cw.writerow(headers + ['key'])
+        idx1 = headers.index("sample_1")
+        idx2 = headers.index("sample_2")
+        for r in reader:
+            k = r[idx1] + '-' + r[idx2]
+            cw.writerow(r + [k])
+
+        return si.getvalue()
 
 parser = argparse.ArgumentParser(description='Produce a standalone Vennt html file from a CSV file containing gene-lists.  You may use a single CSV file containing all the gene lists - in which case you should have a "key" column specifying the gene lists.  Alternatively, you can use separate CSV files for each gene list then a "key" column will be created based on the filenames.  With separate CSV files they are expected to be in the same format with the same column names in the same column order.')
 parser.add_argument('csvfile',
@@ -37,32 +70,31 @@ parser.add_argument('--logFC', default='logFC',
                     help='Name for "logFC" column in CSV file (default "logFC")')
 parser.add_argument('--info', default=['Feature'], nargs='*',
                     help='Names for info columns in CSV file - accepts multiple strings (default "Feature")')
+parser.add_argument('--cuffdiff', action='store_true', default=False,
+                    help='Input file is from cuffdiff (gene_exp.diff).  Other options will be ignored')
 
 args = parser.parse_args()
 
 #print args
 
-csv = None
+csv_data = None
 if args.csvfile == '-':
     sys.stderr.write("Reading from stdin...\n")
-    csv = sys.stdin.read()
+    csv_data = sys.stdin.read()
 elif len(args.csvfile)==1:
-    sys.stderr.write("Using a single CSV file with the key column '%s'\n"%(args.key))
-    csv = open(args.csvfile[0],'r').read()
+    if args.cuffdiff:
+        csv_data = cuffdiff_process(args.csvfile[0])
+        args.id  = 'test_id'
+        args.fdr = 'q_value'
+        args.logFC = 'log2(fold_change)'
+        args.info = ['gene_id','gene']
+    else:
+        sys.stderr.write("Using a single CSV file with the key column '%s'\n"%(args.key))
+        csv_data = open(args.csvfile[0],'r').read()
 else:
-    data = []
-    sys.stderr.write("Using a separate CSV files\n")
-    for f in args.csvfile:
-        sys.stderr.write("  Reading : %s\n"%f)
-        d = open(f).read()
-        # Separate header (and keep if it is the first)
-        hdr, d = d.split("\n",1)
-        if len(data)==0:
-            data.append('"%s",'%(args.key)+hdr+"\n")
-        d = re.sub(r'^(.{2})',r'"%s",\1'%os.path.splitext(os.path.basename(f))[0], d, 0, re.MULTILINE)   # Add a key column to all rows
-        data.append(d)
+    if args.cuffdiff:
+        error("Only 1 file (gene_exp.diff) expected when using --cuffdiff")
+    csv_data = combine_csv(args.csvfile, args.key)
 
-    csv = ''.join(data)
-
-args.out.write(embed(csv, args))
+args.out.write(embed(csv_data, args))
 
