@@ -74,7 +74,7 @@ def cuffdiff_process(f):
                 r[fcIdx]=bigFC
             if r[fcIdx]=='-inf':
                 r[fcIdx]=-bigFC
-            k = r[idx1] + '-' + r[idx2]
+            k = r[idx1] + ' vs ' + r[idx2]
             cw.writerow(r + [k])
 
         return si.getvalue()
