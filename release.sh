@@ -17,6 +17,7 @@ fi
 
 echo "Minifying..."
 ./build.sh
+./build-embed.sh remote
 
 echo "Changing repo to gh-pages"
 git checkout gh-pages
@@ -26,8 +27,6 @@ echo "Copying to dist/$ver"
 mkdir -p dist/$ver
 cp -r build/* dist/$ver
 sed -e "s|'\./|'$url|" build/index.html > dist/$ver/index.html
-
-sed -e "/HTML-HERE/r dist/$ver/index.html" -e '/HTML-HERE/d' build/embed.py > dist/$ver/vennt.py
 
 (  cd dist
    for f in $ver/*; do
