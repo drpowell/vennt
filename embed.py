@@ -17,7 +17,8 @@ def embed(csv, args):
             HTML-HERE
          """
     enc = json.dumps(csv)
-    settings = ("window.venn_settings = {key_column: %s, id_column: %s, fdr_column: %s,"
+    settings = ("window.venn_settings = {html_version: 'VERSION-HERE',"
+                "key_column: %s, id_column: %s, fdr_column: %s,"
                 "logFC_column: %s, info_columns: %s, csv_data: data};")%(
                   json.dumps(args.key), json.dumps(args.id), json.dumps(args.fdr),
                   json.dumps(args.logFC), json.dumps(args.info))
