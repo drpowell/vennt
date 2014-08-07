@@ -41,7 +41,7 @@ def combine_csv(files,key):
 
     return '\n'.join(data)
 
-def cuffdiff_process( f ):
+def cuffdiff_process(f):
     with open(f, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter="\t")
         si = StringIO.StringIO()
@@ -63,7 +63,7 @@ def cuffdiff_process( f ):
 
         return si.getvalue()
 
-def venn( args ):
+def venn(args):
 
     if args.tab:
         args.tab = '\t'
@@ -102,18 +102,18 @@ def arguments():
     parser = argparse.ArgumentParser(description='Produce a standalone Vennt html file from a CSV file containing gene-lists.  You may use a single CSV file containing all the gene lists - in which case you should have a "key" column specifying the gene lists.  Alternatively, you can use separate CSV files for each gene list then a "key" column will be created based on the filenames.  With separate CSV files they are expected to be in the same format with the same column names in the same column order.')
     parser.add_argument('--version', action='version', version=version)
     parser.add_argument('--csvfile',
-                        nargs='*', default='-', 
+                        nargs='*', default='-',
                         help="CSV file to process (default stdin).  Multiple files may be specified - in which case it is assumed each file contains one gene list and the filenames will be used to create a 'key' column")
-    parser.add_argument('-o','--out', type=argparse.FileType('w'), 
-                        default='-', 
+    parser.add_argument('-o','--out', type=argparse.FileType('w'),
+                        default='-',
                         help="Output file (default stdout)")
-    parser.add_argument('--key', default='key', 
+    parser.add_argument('--key', default='key',
                         help='Name for "key" column in CSV file (default "key").  Ignored if using multiple CSV files.')
-    parser.add_argument('--id', default='Feature', 
+    parser.add_argument('--id', default='Feature',
                         help='Name for "id" column in CSV file (default "Feature")')
-    parser.add_argument('--fdr', default='adj.P.Val', 
+    parser.add_argument('--fdr', default='adj.P.Val',
                         help='Name for "FDR" column in CSV file (default "adj.P.Val")')
-    parser.add_argument('--logFC', default='logFC', 
+    parser.add_argument('--logFC', default='logFC',
                         help='Name for "logFC" column in CSV file (default "logFC")')
     parser.add_argument('--info', default=['Feature'], nargs='*',
                         help='Names for info columns in CSV file - accepts multiple strings (default "Feature")')
@@ -129,4 +129,3 @@ if __name__ == '__main__':
     parser = arguments()
     args = parser.parse_args()
     args.out.write( venn( args ) )
-
