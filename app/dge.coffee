@@ -251,6 +251,7 @@ class Data
         defined_columns = [key_column,id_column,fdrCol,logFCcol].concat(info_columns)
         all_keys = {}
         for r in rows
+            continue if !r[key_column]? || !r[id_column]     # Skip blank rows
             for c in defined_columns
                 if !r[c]? && limit_msg.check_and_add(c)
                     log_error("Missing data for column : #{c}")

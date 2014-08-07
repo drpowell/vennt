@@ -35,11 +35,11 @@ def combine_csv(files,key):
         # Separate header (and keep if it is the first)
         hdr, d = d.split("\n",1)
         if len(data)==0:
-            data.append('"%s",'%(key)+hdr+"\n")
+            data.append('"%s",'%(key)+hdr)
         d = re.sub(r'^(.{2})',r'"%s",\1'%os.path.splitext(os.path.basename(f))[0], d, 0, re.MULTILINE)   # Add a key column to all rows
         data.append(d)
 
-    return ''.join(data)
+    return '\n'.join(data)
 
 def cuffdiff_process( f ):
     with open(f, 'r') as csvfile:

@@ -1,3 +1,5 @@
+v0.8.2
+  * Fix bug in vennt.py when csv files do not have a trailing newline
 v0.8.1
   * Allow text selection in the gene table
   * Display message when we can't draw a venn diagram
