@@ -261,7 +261,7 @@ class Data
             # Make number columns actual numbers
             for num_col in [fdrCol, logFCcol]
                 if !is_number(r[num_col])
-                    log_error("Not numeric '#{r[num_col]}' for row : #{r}") if limit_msg.check_and_add(num_col)
+                    log_error("Not numeric '#{r[num_col]}' for row : #{r[id_column]}") if limit_msg.check_and_add(num_col)
                 r[num_col]=parseFloat(r[num_col])
 
             key = r[key_column]
