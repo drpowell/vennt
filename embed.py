@@ -8,6 +8,8 @@ import csv, StringIO
 
 bigFC = 100
 
+version = 'VERSION-HERE'
+
 def error(message):
     sys.stderr.write("Error: %s\n" % message)
     sys.exit(1)
@@ -17,9 +19,9 @@ def embed(csv, args):
             HTML-HERE
          """
     enc = json.dumps(csv)
-    settings = ("window.venn_settings = {html_version: 'VERSION-HERE',"
+    settings = ("window.venn_settings = {html_version: '%s',"
                 "key_column: %s, id_column: %s, fdr_column: %s,"
-                "logFC_column: %s, info_columns: %s, csv_data: data};")%(
+                "logFC_column: %s, info_columns: %s, csv_data: data};")%(version,
                   json.dumps(args.key), json.dumps(args.id), json.dumps(args.fdr),
                   json.dumps(args.logFC), json.dumps(args.info))
     return html.replace('window.venn_settings = { };', "var data=%s;\n\n%s"%(enc,settings), 1)
@@ -98,6 +100,7 @@ def venn( args ):
 
 def arguments():
     parser = argparse.ArgumentParser(description='Produce a standalone Vennt html file from a CSV file containing gene-lists.  You may use a single CSV file containing all the gene lists - in which case you should have a "key" column specifying the gene lists.  Alternatively, you can use separate CSV files for each gene list then a "key" column will be created based on the filenames.  With separate CSV files they are expected to be in the same format with the same column names in the same column order.')
+    parser.add_argument('--version', action='version', version=version)
     parser.add_argument('--csvfile',
                         nargs='*', default='-', 
                         help="CSV file to process (default stdin).  Multiple files may be specified - in which case it is assumed each file contains one gene list and the filenames will be used to create a 'key' column")
