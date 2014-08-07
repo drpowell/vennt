@@ -88,6 +88,11 @@ def venn(args):
     else:
         args.tab = ','
 
+    if args.csvfile_old is not None:
+        args.csvfile = args.csvfile_old
+
+    #print args
+
     csv_data = None
     if args.csvfile == '-':
         sys.stderr.write("Reading from stdin...\n")
@@ -119,9 +124,12 @@ def venn(args):
 def arguments():
     parser = argparse.ArgumentParser(description='Produce a standalone Vennt html file from a CSV file containing gene-lists.  You may use a single CSV file containing all the gene lists - in which case you should have a "key" column specifying the gene lists.  Alternatively, you can use separate CSV files for each gene list then a "key" column will be created based on the filenames.  With separate CSV files they are expected to be in the same format with the same column names in the same column order.')
     parser.add_argument('--version', action='version', version=version)
-    parser.add_argument('--csvfile',
+    parser.add_argument('csvfile',
                         nargs='*', default='-',
                         help="CSV file to process (default stdin).  Multiple files may be specified - in which case it is assumed each file contains one gene list and the filenames will be used to create a 'key' column")
+    parser.add_argument('--csvfile', dest='csvfile_old',
+                        nargs='*', metavar='CSVFILE',
+                        help="Like positional csvfile above.  For backward compatibility")
     parser.add_argument('-o','--out', type=argparse.FileType('w'),
                         default='-',
                         help="Output file (default stdout)")
