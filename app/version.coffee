@@ -1,2 +1,2 @@
 
-window.vennt_version = '0.8.1'
+window.vennt_version = '0.8.2'
