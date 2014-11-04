@@ -1,3 +1,6 @@
+v0.8.3
+  * Fix bug in vennt.py when handling tsv files
+  * Add better logging to js when missing an id column
 v0.8.2
   * Fix bug in vennt.py when csv files do not have a trailing newline
 v0.8.1

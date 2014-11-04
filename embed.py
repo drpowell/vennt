@@ -26,20 +26,27 @@ def embed(csv, args):
                   json.dumps(args.logFC), json.dumps(args.info))
     return html.replace('window.venn_settings = { };', "var data=%s;\n\n%s"%(enc,settings), 1)
 
-def combine_csv(files,key):
+def combine_csv(files,key, delim):
     data = []
     sys.stderr.write("Using a separate CSV files\n")
+    si = StringIO.StringIO()
+    cw = csv.writer(si, delimiter=",")
+    first = True
     for f in files:
         sys.stderr.write("  Reading : %s\n"%f)
-        d = open(f).read()
-        # Separate header (and keep if it is the first)
-        hdr, d = d.split("\n",1)
-        if len(data)==0:
-            data.append('"%s",'%(key)+hdr)
-        d = re.sub(r'^(.{2})',r'"%s",\1'%os.path.splitext(os.path.basename(f))[0], d, 0, re.MULTILINE)   # Add a key column to all rows
-        data.append(d)
+        with open(f, 'rb') as fopen:
+            reader = csv.reader(fopen, delimiter=delim)
 
-    return '\n'.join(data)
+            headers = reader.next()
+            if first:
+                cw.writerow(headers + ['key'])
+                first=False
+
+            k = os.path.splitext(os.path.basename(f))[0]
+            for r in reader:
+                cw.writerow(r+[k])
+
+    return si.getvalue()
 
 def cuffdiff_process(f):
     with open(f, 'r') as csvfile:
@@ -98,7 +105,7 @@ def venn(args):
     else:
         if args.cuffdiff:
             error("Only 1 file (gene_exp.diff) expected when using --cuffdiff")
-        csv_data = combine_csv(args.csvfile, args.key)
+        csv_data = combine_csv(args.csvfile, args.key, args.tab)
 
     return embed( csv_data, args )
 
