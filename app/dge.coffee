@@ -267,7 +267,9 @@ class Data
             for num_col in [fdrCol, logFCcol]
                 if !is_number(r[num_col])
                     log_error("Not numeric '#{r[num_col]}' for row : #{r[id_column]}") if limit_msg.check_and_add(num_col)
-                r[num_col]=parseFloat(r[num_col])
+                    r[num_col]=if num_col==fdrCol then 1.0 else NaN
+                else
+                    r[num_col]=parseFloat(r[num_col])
 
             key = r[key_column]
             all_keys[key] = 1
@@ -280,13 +282,18 @@ class Data
 
         # Add missing any rows
         for id, d of @data
-            for key,dummy of all_keys
+            for key,_ of all_keys
                 if !d[key]?
+                    if limit_msg.check_and_add('missing')
+                        log_error("Missing ID for #{key}, id=#{id}")
+                    # Fill in some defaults
                     d[key] = {id: id}
                     d[key][fdrCol] = 1.0
                     d[key][logFCcol] = NaN
-                    if limit_msg.check_and_add('missing')
-                        log_error("Missing ID for #{key}, id=#{id}")
+                    # Find a row with info for the "info columns"
+                    for c in info_columns
+                        for k2,_ of all_keys
+                            d[key][c] = d[k2][c] if d[k2]? && d[k2][c]?
 
         @ids = d3.keys(@data)
         @keys = d3.keys(@data[@ids[0]])

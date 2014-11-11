@@ -1,3 +1,6 @@
+v0.8.4
+  * Fix handling of missing values.  Use 1.0 for FDR when missing
+  * Fill in "info" columns when some files have missing rows
 v0.8.3
   * Fix bug in vennt.py when handling tsv files
   * Add better logging to js when missing an id column
