@@ -2,18 +2,18 @@
 
 * Dynamic Venn diagrams for exploring lists of differential expressed genes
 
-Try a [Live Demo](http://drpowell.github.io/vennt/example/dge-example.html)
+Try a [Live Demo](https://drpowell.github.io/vennt/example/dge-example.html)
 
 ## Example Screenshot
 
-![Vennt screenshot](http://drpowell.github.io/vennt/images/screenshot-1.png)
+![Vennt screenshot](https://drpowell.github.io/vennt/images/screenshot-1.png)
 
 ## Usage
 
 ### As a single HTML file
 
 #### Using Cuffdiff output
-Download this python script <a href='http://drpowell.github.io/vennt/dist/vennt.py'>vennt.py</a> (requires python >=2.7).  Then simply run:
+Download this python script <a href='https://drpowell.github.io/vennt/dist/vennt.py'>vennt.py</a> (requires python >=2.7).  Then simply run:
 
     python vennt.py --cuffdiff gene_exp.diff > my-vennt.html
 
@@ -24,7 +24,7 @@ This will create a single html file that can be shared.
 
 Generate a single CSV file with all your gene lists.  Each row of the CSV should contain information about a gene including the `log fold change`, and the `adjust p-value`.  Use a single column to specify the gene-list (see the example below).  Each gene must have a unique identifier, which is used to find the corresponding genes in the different gene lists.
 
-Download this python script <a href='http://drpowell.github.io/vennt/dist/vennt.py'>vennt.py</a> (requires python >=2.7).  Then, if your CSV column names match the defaults, simply run it as follows:
+Download this python script <a href='https://drpowell.github.io/vennt/dist/vennt.py'>vennt.py</a> (requires python >=2.7).  Then, if your CSV column names match the defaults, simply run it as follows:
 
     python vennt.py gene-lists.csv > my-vennt.html
 
@@ -34,7 +34,7 @@ You may specify alternative column names, see `python vennt.py -h` for help.  An
 
 Creating a single HTML file with all your gene lists embedded may be a problem due to the size of the resulting HTML file.  In that situation, you can serve the gene-list CSV file from a web-server.  Firstly, create your CSV as described above.
 
-Download this <a href='http://drpowell.github.io/vennt/example/template.html'>html file</a>.  Then, put it and your CSV file on a web-server.  (For local testing you can use `python -mSimpleHTTPServer`.)
+Download this <a href='https://drpowell.github.io/vennt/example/template.html'>html file</a>.  Then, put it and your CSV file on a web-server.  (For local testing you can use `python -mSimpleHTTPServer`.)
 
 You may need to specify some configuration if the defaults do not suffice, for example column names.  These are configured in the html file.
 
@@ -99,4 +99,4 @@ This will watch the js & coffeescript files and rebuild `main.js` as needed.  Yo
     (cd build ; python -mSimpleHTTPServer)
 
 ## License ##
-Vennt is released under the GPL v3 (or later) license, see <a href='http://github.com/drpowell/vennt/blob/master/COPYING.txt'>COPYING.txt</a>
+Vennt is released under the GPL v3 (or later) license, see <a href='https://github.com/drpowell/vennt/blob/master/COPYING.txt'>COPYING.txt</a>

@@ -14,7 +14,7 @@ case "$1" in
         echo "Building LOCAL, ensure you run ./build.sh dev"
         ;;
     remote)
-        url='http://drpowell.github.io/vennt/dist/'
+        url='https://drpowell.github.io/vennt/dist/'
         ;;
     *)
       echo "Usage: ./build-embed.sh local|local-srv|remote"
